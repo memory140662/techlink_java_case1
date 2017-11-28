@@ -145,8 +145,15 @@ public class ReplaceUtil {
     public void start() {
         File dist = new File(outputDir);
         File file = new File(srcDir);
+        System.out.println("來源目錄: " + file.getAbsolutePath());
+        if (!file.exists()) {
+            System.out.println("來源目錄不存在!");
+            return;
+        }
+        System.out.println("輸出目錄: " + dist.getAbsolutePath());
         makeOutputDir(dist);
-        for (String fileName : file.list(new MyFilter(targets))) {
+        for (File f : file.listFiles(new MyFilter(targets))) {
+            String fileName = f.getAbsolutePath();
             try {
                 replaceAttrWithZip(fileName, dist, replace);
             } catch (IOException e) {
