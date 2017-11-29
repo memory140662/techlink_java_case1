@@ -11,61 +11,68 @@ import java.util.Map;
 public class App {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
         Map<String, Object> config = getConfigMap();
+        start(config);
+    }
+
+    private static void start(Map<String, Object> config) {
         if (config != null) {
             String action = (String) ((config.get("action") != null)? config.get("action"): "ALL");
             // 更換
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("REP")) {
-                String srcDir = (String) ((config.get("srcDir") != null) ? config.get("srcDir") : "./");
-                String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
-                List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
-                List<Map<String, String>> reaplce = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
+                final String srcDir = (String) ((config.get("srcDir") != null) ? config.get("srcDir") : "./");
+                final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
+                final List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
+                final List<Map<String, String>> reaplce = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
                 new ReplaceUtil(reaplce, targets, srcDir, outputDir).start();
             }
 
             // 登入
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("LOGIN")) {
-                String username = (String) config.get("username");
-                String password = (String) config.get("password");
-                String server = (String) config.get("server");
-                execLogin(username, password, server);
+                final String username = (String) config.get("username");
+                final String password = (String) config.get("password");
+                final String server = (String) config.get("server");
+                final String tabcmdPath = (String) config.get("tabcmdPath");
+                execLogin(username, password, server, tabcmdPath);
             }
 
             // Publish
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("PUBLISH")) {
-                String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
-                String name = (String) config.get("name");
-                String dbUsername = (String) config.get("dbUsername");
-                String dbPassword = (String) config.get("dbPassword");
-                List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
-                File file = new File(outputDir);
+                final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
+                final String name = (String) config.get("name");
+                final String dbUsername = (String) config.get("dbUsername");
+                final String dbPassword = (String) config.get("dbPassword");
+                final List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
+                final String tabcmdPath = (String) config.get("tabcmdPath");
+                final String projectName = (String) config.get("projectName");
+                final File file = new File(outputDir);
                 for (String target: targets) {
-                    execPublish(file, target, name, dbUsername, dbPassword);
+                    execPublish(file, target, name, dbUsername, dbPassword, tabcmdPath, projectName);
                 }
             }
         }
-
-
-
     }
 
 
-    private static void execPublish(File file, String type, String name, String dbUsername, String dbPassword) {
+    private static void execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName) {
         for (File f: file.listFiles()) {
             if (f.isDirectory()) {
-                execPublish(f, type, name, dbUsername, dbPassword);
+                execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName);
             } else {
                 if (f.getName().endsWith(type)) {
                     try {
-                        String cmd = String.format("tabcmd publish \"%s\" %s %s",
+                        String tabcmd = getTabcmd(tabcmdPath);
+                        String cmd = String.format("%s publish  \"%s\" %s %s %s  -o ",
+                                tabcmd,
                                 f.getAbsoluteFile().toString(),
                                 (name != null && name.trim().length() > 0) ? "-n \"" + name: "\"",
+                                (projectName != null && projectName.trim().length() > 0) ? "-r \"" + projectName + "\"" : "",
                                 (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
-                                (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\"": "");
+                                (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\" -save-db-password": ""
+                        );
                         System.out.println(cmd);
                         execCmd(cmd);
                     } catch (Exception e) {
@@ -76,9 +83,27 @@ public class App {
         }
     }
 
-    private static void execLogin(String username, String password, String server){
+    private static String getTabcmd(String tabcmdPath) {
+        if (tabcmdPath != null && tabcmdPath.trim().length() > 0) {
+            tabcmdPath = tabcmdPath.trim();
+            if (!(tabcmdPath.endsWith("\\tabcmd") || tabcmdPath.endsWith("/tabcmd"))) {
+                if (tabcmdPath.endsWith("\\") || tabcmdPath.endsWith("/")) {
+                    tabcmdPath = tabcmdPath.trim().concat("tabcmd");
+                } else {
+                    tabcmdPath = tabcmdPath.trim().concat("/tabcmd");
+                }
+            }
+        } else {
+            return "tabcmd";
+        }
+        return tabcmdPath;
+    }
+
+    private static void execLogin(String username, String password, String server, String tabcmdPath){
         try {
-            String cmd = String.format("tabcmd login -s %s -u %s -p %s", server, username, password);
+            String tabcmd = getTabcmd(tabcmdPath);
+            String cmd = String.format("%s login -s %s -u %s -p %s",
+                    tabcmd, server, username, password);
             System.out.println(cmd);
             execCmd(cmd);
         } catch (Exception e) {
