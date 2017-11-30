@@ -12,6 +12,7 @@ public class App {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Map<String, Object> config = getConfigMap();
+        System.out.println("version: 2017/11/29 start.");
         start(config);
     }
 
