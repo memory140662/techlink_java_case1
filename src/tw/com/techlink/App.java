@@ -12,16 +12,18 @@ public class App {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Map<String, Object> config = getConfigMap();
-        System.out.println("version: 2017/11/29 start.");
+        System.out.println("version: 2017/12/01 start.");
         start(config);
     }
 
     private static void start(Map<String, Object> config) {
         if (config != null) {
             String action = (String) ((config.get("action") != null)? config.get("action"): "ALL");
+            System.out.println("Action: " + action);
             // 更換
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("REP")) {
+                System.out.println("進行更換作業。");
                 final String srcDir = (String) ((config.get("srcDir") != null) ? config.get("srcDir") : "./");
                 final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
                 final List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
@@ -32,6 +34,7 @@ public class App {
             // 登入
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("LOGIN")) {
+                System.out.println("tabcmd login.");
                 final String username = (String) config.get("username");
                 final String password = (String) config.get("password");
                 final String server = (String) config.get("server");
@@ -42,6 +45,7 @@ public class App {
             // Publish
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("PUBLISH")) {
+                System.out.println("tabcmd publish.");
                 final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
                 final String name = (String) config.get("name");
                 final String dbUsername = (String) config.get("dbUsername");
@@ -66,6 +70,7 @@ public class App {
                 if (f.getName().endsWith(type)) {
                     try {
                         String tabcmd = getTabcmd(tabcmdPath);
+                        System.out.println("tabcmd: " + tabcmd);
                         String cmd = String.format("%s publish  \"%s\" %s %s %s  -o ",
                                 tabcmd,
                                 f.getAbsoluteFile().toString(),
@@ -74,7 +79,6 @@ public class App {
                                 (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
                                 (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\" -save-db-password": ""
                         );
-                        System.out.println(cmd);
                         execCmd(cmd);
                     } catch (Exception e) {
                         System.err.println(e.getMessage());
@@ -103,9 +107,9 @@ public class App {
     private static void execLogin(String username, String password, String server, String tabcmdPath){
         try {
             String tabcmd = getTabcmd(tabcmdPath);
+            System.out.println("tabcmd: " + tabcmd);
             String cmd = String.format("%s login -s %s -u %s -p %s",
                     tabcmd, server, username, password);
-            System.out.println(cmd);
             execCmd(cmd);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -113,6 +117,7 @@ public class App {
     }
 
     private static void execCmd(String cmd) throws IOException, InterruptedException {
+        System.out.println(cmd);
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(cmd);
         process.waitFor();
