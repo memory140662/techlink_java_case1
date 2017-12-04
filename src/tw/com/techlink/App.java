@@ -12,7 +12,7 @@ public class App {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Map<String, Object> config = getConfigMap();
-        System.out.println("version: 2017/12/01 start.");
+        System.out.println("version: 2017/12/04 start.");
         start(config);
     }
 
@@ -33,7 +33,8 @@ public class App {
 
             // 登入
             if (action.equalsIgnoreCase("ALL") ||
-                    action.equalsIgnoreCase("LOGIN")) {
+                    action.equalsIgnoreCase("LOGIN") ||
+                    action.equalsIgnoreCase("PUBLISH")) {
                 System.out.println("tabcmd login.");
                 final String username = (String) config.get("username");
                 final String password = (String) config.get("password");
@@ -71,7 +72,7 @@ public class App {
                     try {
                         String tabcmd = getTabcmd(tabcmdPath);
                         System.out.println("tabcmd: " + tabcmd);
-                        String cmd = String.format("%s publish  \"%s\" %s %s %s  -o ",
+                        String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s  -o ",
                                 tabcmd,
                                 f.getAbsoluteFile().toString(),
                                 (name != null && name.trim().length() > 0) ? "-n \"" + name: "\"",
@@ -108,7 +109,7 @@ public class App {
         try {
             String tabcmd = getTabcmd(tabcmdPath);
             System.out.println("tabcmd: " + tabcmd);
-            String cmd = String.format("%s login -s %s -u %s -p %s",
+            String cmd = String.format("\"%s\" login -s %s -u %s -p %s",
                     tabcmd, server, username, password);
             execCmd(cmd);
         } catch (Exception e) {
