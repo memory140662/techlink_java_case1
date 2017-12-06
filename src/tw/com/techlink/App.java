@@ -71,10 +71,10 @@ public class App {
                     try {
                         String tabcmd = getTabcmd(tabcmdPath);
                         System.out.println("tabcmd: " + tabcmd);
-                        String cmd = String.format("%s publish  \"%s\" %s %s %s  -o ",
+                        String cmd = String.format("%s publish  \"%s\" %s %s %s %s -o ",
                                 tabcmd,
                                 f.getAbsoluteFile().toString(),
-                                (name != null && name.trim().length() > 0) ? "-n \"" + name: "\"",
+                                (name != null && name.trim().length() > 0) ? "-n \"" + name + "\"" : "",
                                 (projectName != null && projectName.trim().length() > 0) ? "-r \"" + projectName + "\"" : "",
                                 (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
                                 (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\" -save-db-password": ""
