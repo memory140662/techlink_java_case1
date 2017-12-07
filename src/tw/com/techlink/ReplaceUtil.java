@@ -79,7 +79,7 @@ public class ReplaceUtil {
             if (!entry.isDirectory()) {
                 File file1 = new File(dist.getPath() + "/" + entry.getName());
                 zos.putNextEntry(new ZipEntry(file1.getName()));
-                BufferedReader br = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry)));
+                BufferedReader br = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry), encode));
                 while (br.ready()) {
                     String line = br.readLine();
                     line = getReplaceString(replace, line).concat("\n");
