@@ -20,6 +20,7 @@ public class App {
         if (config != null) {
             String action = (String) ((config.get("action") != null)? config.get("action"): "ALL");
             System.out.println("Action: " + action);
+            System.out.println("***************************************");
             // 更換
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("REP") ||
@@ -31,7 +32,6 @@ public class App {
                 final List<Map<String, String>> reaplce = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
                 new ReplaceUtil(reaplce, targets, srcDir, outputDir).start();
             }
-
             // 登入
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("LOGIN") ||
@@ -43,7 +43,7 @@ public class App {
                 final String tabcmdPath = (String) config.get("tabcmdPath");
                 execLogin(username, password, server, tabcmdPath);
             }
-
+            System.out.println("***************************************");
             // Publish
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("PUBLISH")) {
@@ -60,6 +60,7 @@ public class App {
                     execPublish(file, target, name, dbUsername, dbPassword, tabcmdPath, projectName);
                 }
             }
+            System.out.println("***************************************");
         }
     }
 
