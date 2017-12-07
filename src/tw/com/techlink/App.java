@@ -34,7 +34,8 @@ public class App {
 
             // 登入
             if (action.equalsIgnoreCase("ALL") ||
-                    action.equalsIgnoreCase("LOGIN")) {
+                    action.equalsIgnoreCase("LOGIN") ||
+                    action.equalsIgnoreCase("PUBLISH")) {
                 System.out.println("tabcmd login.");
                 final String username = (String) config.get("username");
                 final String password = (String) config.get("password");
@@ -72,7 +73,7 @@ public class App {
                     try {
                         String tabcmd = getTabcmd(tabcmdPath);
                         System.out.println("tabcmd: " + tabcmd);
-                        String cmd = String.format("%s publish  \"%s\" %s %s %s %s -o ",
+                        String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
                                 tabcmd,
                                 f.getAbsoluteFile().toString(),
                                 (name != null && name.trim().length() > 0) ? "-n \"" + name + "\"" : "",
@@ -109,7 +110,7 @@ public class App {
         try {
             String tabcmd = getTabcmd(tabcmdPath);
             System.out.println("tabcmd: " + tabcmd);
-            String cmd = String.format("%s login -s %s -u %s -p %s",
+            String cmd = String.format("\"%s\" login -s %s -u %s -p %s",
                     tabcmd, server, username, password);
             execCmd(cmd);
         } catch (Exception e) {
@@ -119,13 +120,13 @@ public class App {
 
     private static void execCmd(String cmd) throws IOException, InterruptedException {
         System.out.println(cmd);
-        Runtime runtime = Runtime.getRuntime();
-        Process process = runtime.exec(cmd);
-        process.waitFor();
-        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        while (br.ready()) {
-            System.out.println(br.readLine());
-        }
+//        Runtime runtime = Runtime.getRuntime();
+//        Process process = runtime.exec(cmd);
+//        process.waitFor();
+//        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//        while (br.ready()) {
+//            System.out.println(br.readLine());
+//        }
     }
 
     private static Map<String, Object> getConfigMap(){
