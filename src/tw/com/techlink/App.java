@@ -12,7 +12,7 @@ public class App {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Map<String, Object> config = getConfigMap();
-        System.out.println("version: 2017/12/01 start.");
+        System.out.println("version: 2017/12/07 start.");
         start(config);
     }
 
@@ -22,7 +22,8 @@ public class App {
             System.out.println("Action: " + action);
             // 更換
             if (action.equalsIgnoreCase("ALL") ||
-                    action.equalsIgnoreCase("REP")) {
+                    action.equalsIgnoreCase("REP") ||
+                    action.equalsIgnoreCase("REPLACE")) {
                 System.out.println("進行更換作業。");
                 final String srcDir = (String) ((config.get("srcDir") != null) ? config.get("srcDir") : "./");
                 final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");

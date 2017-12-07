@@ -14,25 +14,38 @@ public class ReplaceUtil {
     private List<String> targets;
     private String srcDir;
     private String outputDir;
+    private String encode;
 
     public ReplaceUtil(List<Map<String, String>> replace, List<String> targets, String srcDir, String outputDir) {
         this.replace = replace;
         this.targets = targets;
         this.srcDir = srcDir;
         this.outputDir = outputDir;
+        this.encode = "UTF-8";
     }
 
-    private void replaceAttr(List<Map<String, String>> replace, File dist, String fileName) {
+    public ReplaceUtil(List<Map<String, String>> replace, List<String> targets, String srcDir, String outputDir, String encode) {
+        this.replace = replace;
+        this.targets = targets;
+        this.srcDir = srcDir;
+        this.outputDir = outputDir;
+        this.encode = encode;
+    }
+
+    private void replaceAttr(List<Map<String, String>> replace, File dist, File src) {
+        System.out.println("進件檔案：" + src.getAbsoluteFile().toString());
         try {
-            File f = new File(fileName);
+            File f = new File(src.getAbsoluteFile().toString());
             if (f.isFile()) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
-                FileWriter fw = new FileWriter(dist + "/" + f.getName());
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(src.getAbsoluteFile().toString()), encode));
+                File outputFile = new File(dist + "/" + f.getName());
+                FileWriter fw = new FileWriter(outputFile);
                 while (br.ready()) {
                     fw.append(getReplaceString(replace, br.readLine())).append("\n");
                 }
                 fw.close();
                 br.close();
+                System.out.println("輸出檔案：" + outputFile.getAbsoluteFile());
             }
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
@@ -52,9 +65,11 @@ public class ReplaceUtil {
     }
 
 
-    private void replaceAttrWithZip(String fileName, File dist, List<Map<String, String>> replace) throws IOException {
-        ZipFile zipFile = new ZipFile(fileName);
-        ZipOutputStream zos = new ZipOutputStream(new File(dist.getPath() + "/" + fileName));
+    private void replaceAttrWithZip(File src, File dist, List<Map<String, String>> replace) throws IOException {
+        ZipFile zipFile = new ZipFile(src.getAbsoluteFile().toString());
+        System.out.println("進件檔案(壓縮檔)：" + src.getAbsoluteFile().toString());
+        File outputFile = new File(dist.getPath() + "/" + src.getName());
+        ZipOutputStream zos = new ZipOutputStream(outputFile);
         Enumeration enumeration = zipFile.getEntries();
         while (enumeration.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) enumeration.nextElement();
@@ -68,13 +83,13 @@ public class ReplaceUtil {
                 while (br.ready()) {
                     String line = br.readLine();
                     line = getReplaceString(replace, line).concat("\n");
-                    zos.write(line.getBytes());
+                    zos.write(line.getBytes(encode));
                 }
                 zos.close();
                 br.close();
             }
         }
-
+        System.out.println("輸出檔案(壓縮檔)：" + outputFile.getAbsoluteFile());
     }
 
     private String getReplaceString(List<Map<String, String>> replace, String line) {
@@ -151,14 +166,15 @@ public class ReplaceUtil {
             return;
         }
         System.out.println("輸出目錄: " + dist.getAbsolutePath());
+        System.out.println("***************************************");
         makeOutputDir(dist);
         for (File f : file.listFiles(new MyFilter(targets))) {
-            String fileName = f.getAbsolutePath();
             try {
-                replaceAttrWithZip(fileName, dist, replace);
+                replaceAttrWithZip(f, dist, replace);
             } catch (IOException e) {
-                replaceAttr(replace, dist, fileName);
+                replaceAttr(replace, dist, f);
             }
+            System.out.println("***************************************");
         }
     }
 }
