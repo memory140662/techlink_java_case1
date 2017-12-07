@@ -42,8 +42,9 @@ public class App {
                 final String server = (String) config.get("server");
                 final String tabcmdPath = (String) config.get("tabcmdPath");
                 execLogin(username, password, server, tabcmdPath);
+                System.out.println("***************************************");
             }
-            System.out.println("***************************************");
+
             // Publish
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("PUBLISH")) {
@@ -59,8 +60,9 @@ public class App {
                 for (String target: targets) {
                     execPublish(file, target, name, dbUsername, dbPassword, tabcmdPath, projectName);
                 }
+                System.out.println("***************************************");
             }
-            System.out.println("***************************************");
+
         }
     }
 
