@@ -10,15 +10,13 @@ import java.util.Map;
 @SuppressWarnings("ConstantConditions")
 public class App {
 
-    private static final String ENCODING = "UTF-8";
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Map<String, Object> config = getConfigMap();
         System.out.println("version: 2017/12/08 start.");
         start(config);
     }
 
-    private static void start(Map<String, Object> config) throws Exception {
+    private static void start(Map<String, Object> config) {
         if (config != null) {
             String action = (String) ((config.get("action") != null)? config.get("action"): "ALL");
             System.out.println("Action: " + action);
@@ -28,8 +26,8 @@ public class App {
                     action.equalsIgnoreCase("REP") ||
                     action.equalsIgnoreCase("REPLACE")) {
                 System.out.println("進行更換作業。");
-                final String srcDir = new String(((String) ((config.get("srcDir") != null) ? config.get("srcDir") : "./")).getBytes(ENCODING), ENCODING);
-                final String outputDir = new String(((String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output")).getBytes(ENCODING), ENCODING);
+                final String srcDir = (String) ((config.get("srcDir") != null) ? config.get("srcDir") : "./");
+                final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
                 final List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
                 final List<Map<String, String>> reaplce = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
                 new ReplaceUtil(reaplce, targets, srcDir, outputDir).start();
@@ -41,8 +39,8 @@ public class App {
                 System.out.println("tabcmd login.");
                 final String username = (String) config.get("username");
                 final String password = (String) config.get("password");
-                final String server = (config.get("server") != null) ? new String(((String) config.get("server")).getBytes(ENCODING), ENCODING) : null;
-                final String tabcmdPath = (config.get("tabcmdPath") != null) ? new String(((String) config.get("tabcmdPath")).getBytes(ENCODING)) : null;
+                final String server = (String) config.get("server");
+                final String tabcmdPath = (String) config.get("tabcmdPath");
                 execLogin(username, password, server, tabcmdPath);
                 System.out.println("***************************************");
             }
@@ -51,13 +49,13 @@ public class App {
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("PUBLISH")) {
                 System.out.println("tabcmd publish.");
-                final String outputDir = new String(((String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output")).getBytes(ENCODING), ENCODING);
-                final String name = (config.get("name") != null) ? new String(((String) config.get("name")).getBytes(ENCODING), ENCODING) : null;
-                final String dbUsername = (config.get("dbUsername") != null) ? new String(((String) config.get("dbUsername")).getBytes(ENCODING), ENCODING) : null;
+                final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
+                final String name = (String) config.get("name");
+                final String dbUsername = (String) config.get("dbUsername");
                 final String dbPassword = (String) config.get("dbPassword");
                 final List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
-                final String tabcmdPath = (config.get("tabcmdPath") != null) ? new String(((String) config.get("tabcmdPath")).getBytes(ENCODING), ENCODING) : null;
-                final String projectName = (config.get("projectName") != null) ? new String(((String) config.get("projectName")).getBytes(ENCODING), ENCODING) : null;
+                final String tabcmdPath = (String) config.get("tabcmdPath");
+                final String projectName = (String) config.get("projectName");
                 final File file = new File(outputDir);
                 for (String target: targets) {
                     execPublish(file, target, name, dbUsername, dbPassword, tabcmdPath, projectName);
@@ -138,7 +136,7 @@ public class App {
         try {
             File c = new File("config.json");
             if (c.exists()) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("config.json")));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("config.json"), "UTF-8"));
                 StringBuffer json = new StringBuffer();
                 while (br.ready()) {
                     json.append(br.readLine()).append("\n");
