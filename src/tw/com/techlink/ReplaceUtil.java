@@ -85,10 +85,10 @@ public class ReplaceUtil {
                     line = getReplaceString(replace, line).concat("\n");
                     zos.write(line.getBytes(encode));
                 }
-                zos.close();
                 br.close();
             }
         }
+        zos.close();
         System.out.println("輸出檔案(壓縮檔)：" + outputFile.getAbsoluteFile());
     }
 

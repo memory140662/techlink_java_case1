@@ -1,6 +1,9 @@
 package tw.com.techlink;
 
 import com.google.gson.Gson;
+import org.jdom2.JDOMException;
+import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
+import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,13 +13,15 @@ import java.util.Map;
 @SuppressWarnings("ConstantConditions")
 public class App {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    private static RestApiUtils restApiUtils = null;
+
+    public static void main(String[] args) throws IOException, InterruptedException, JDOMException {
         Map<String, Object> config = getConfigMap();
-        System.out.println("version: 2017/12/08 start.");
+        System.out.println("version: 2017/12/20 start.");
         start(config);
     }
 
-    private static void start(Map<String, Object> config) {
+    private static void start(Map<String, Object> config) throws JDOMException, IOException {
         if (config != null) {
             String action = (String) ((config.get("action") != null)? config.get("action"): "ALL");
             System.out.println("Action: " + action);
@@ -51,15 +56,22 @@ public class App {
                 System.out.println("tabcmd publish.");
                 final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
                 final String name = (String) config.get("name");
+                final String username = (String) config.get("username");
+                final String password = (String) config.get("password");
                 final String dbUsername = (String) config.get("dbUsername");
                 final String dbPassword = (String) config.get("dbPassword");
+                final String server = (String) config.get("server");
                 final List<String> targets = (config.get("targets") != null) ? (List<String>) config.get("targets") : new ArrayList<String>();
                 final String tabcmdPath = (String) config.get("tabcmdPath");
                 final String projectName = (String) config.get("projectName");
                 final File file = new File(outputDir);
+                restApiUtils = RestApiUtils.getInstance();
+                TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, null);
                 for (String target: targets) {
-                    execPublish(file, target, name, dbUsername, dbPassword, tabcmdPath, projectName);
+                    execPublish(file, target, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
                 }
+                restApiUtils.invokeSignOut(credential);
+                restApiUtils = null;
                 System.out.println("***************************************");
             }
 
@@ -67,11 +79,16 @@ public class App {
     }
 
 
-    private static void execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName) {
+    private static void execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException {
         for (File f: file.listFiles()) {
             if (f.isDirectory()) {
-                execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName);
+                execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
+
+                if (type.contains("twb")) {
+                    TwbUtil.remap(file, file, credential.getSite().getId(), server);
+                }
+
                 if (f.getName().endsWith(type)) {
                     try {
                         String tabcmd = getTabcmd(tabcmdPath);
