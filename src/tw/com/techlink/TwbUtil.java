@@ -9,7 +9,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import java.io.*;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
@@ -17,15 +16,11 @@ import java.util.Enumeration;
 
 public class TwbUtil {
 
-    public static void main(String[] args) throws IOException, JDOMException {
-        File file = new File("/Users/guilinzhu/Desktop/target1/data_connections_and_permissions  (1).twb.zip");
-        File output = new File("/Users/guilinzhu/Desktop/target1/data_connections_and_permissions  (1).twb.zip");
-        remapZip(file, output, "455", "34566");
-    }
+//    public static void main(String[] args) throws IOException, JDOMException {git
 
     public static void remapZip(File file, File output, String siteId, String serverNameWithProtocol) throws IOException, JDOMException {
-        File tmpFile = new File("./tmp/" + output.getName());
-        File tmp = new File("./tmp");
+        File tmp = new File(file.toPath().getParent() + "/tmp");
+        File tmpFile = new File(tmp.toPath() + "/" + output.getName());
         tmp.mkdir();
         tmpFile.createNewFile();
         ZipOutputStream outputStream = new ZipOutputStream(tmpFile);
@@ -53,7 +48,7 @@ public class TwbUtil {
 
     }
     public static void remap(File file, File output, String siteId, String serverNameWithProtocol) throws JDOMException, IOException {
-        if (file.getName().contains("twbx")) {
+        if (file.getName().endsWith("twbx")) {
             remapZip(file, output,siteId,serverNameWithProtocol);
         } else {
             Document document = remap(new FileInputStream(file), siteId, serverNameWithProtocol);

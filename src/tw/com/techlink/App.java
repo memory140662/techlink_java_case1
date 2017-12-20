@@ -85,7 +85,7 @@ public class App {
                 execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
 
-                if (type.contains("twb")) {
+                if (type.endsWith("twb") || type.endsWith("twbx")) {
                     TwbUtil.remap(file, file, credential.getSite().getId(), server);
                 }
 
