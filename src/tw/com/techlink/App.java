@@ -86,7 +86,7 @@ public class App {
             } else {
 
                 if (type.endsWith("twb") || type.endsWith("twbx")) {
-                    TwbUtil.remap(file, file, credential.getSite().getId(), server);
+                    TwbUtil.remap(f, f, credential.getSite().getId(), server);
                 }
 
                 if (f.getName().endsWith(type)) {
