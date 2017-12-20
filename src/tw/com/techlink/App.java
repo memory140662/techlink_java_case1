@@ -85,11 +85,12 @@ public class App {
                 execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
 
-                if (type.endsWith("twb") || type.endsWith("twbx")) {
-                    TwbUtil.remap(f, f, credential.getSite().getId(), server);
-                }
-
                 if (f.getName().endsWith(type)) {
+
+                    if (type.endsWith("twb") || type.endsWith("twbx")) {
+                        TwbUtil.remap(f, f, credential.getSite().getId(), server);
+                    }
+
                     try {
                         String tabcmd = getTabcmd(tabcmdPath);
                         System.out.println("tabcmd: " + tabcmd);
