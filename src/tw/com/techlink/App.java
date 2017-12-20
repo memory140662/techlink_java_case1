@@ -65,7 +65,7 @@ public class App {
                 final String tabcmdPath = (String) config.get("tabcmdPath");
                 final String projectName = (String) config.get("projectName");
                 final File file = new File(outputDir);
-                restApiUtils = RestApiUtils.getInstance();
+                restApiUtils = RestApiUtils.getInstance(server);
                 TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, null);
                 for (String target: targets) {
                     execPublish(file, target, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);

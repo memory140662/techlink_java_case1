@@ -69,6 +69,7 @@ public class RestApiUtils {
     private static Unmarshaller s_jaxbUnmarshaller;
 
     private static Properties m_properties = new Properties();
+    private static String server;
     /**
      * Initializes the RestApiUtils if it has not already been done so.
      *
@@ -83,6 +84,16 @@ public class RestApiUtils {
         return INSTANCE;
     }
 
+    public static RestApiUtils getInstance(String server) {
+        if (INSTANCE == null) {
+            INSTANCE = new RestApiUtils();
+            RestApiUtils.server = server;
+            initialize();
+        }
+
+        return INSTANCE;
+    }
+
     /**
      * Creates an instance of UriBuilder, using the URL of the server specified
      * in the configuration file.
@@ -90,7 +101,7 @@ public class RestApiUtils {
      * @return the URI builder
      */
     private static UriBuilder getApiUriBuilder() {
-        return UriBuilder.fromPath(m_properties.getProperty("server.host") + "/api/2.7");
+        return UriBuilder.fromPath(server + "/api/2.7");
     }
     /**
      * Initializes the RestApiUtils. The initialize code loads values from the configuration
@@ -98,6 +109,7 @@ public class RestApiUtils {
      */
     private static void initialize() {
         try {
+
             JAXBContext jaxbContext = JAXBContext.newInstance(TsRequest.class, TsResponse.class);
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = schemaFactory.newSchema(new File("./ts-api_2_7.xsd"));
