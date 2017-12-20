@@ -64,7 +64,7 @@ public class TwbUtil {
 
     public static Document remap(InputStream file, String siteId, String serverNameWithProtocol) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
-        Document document = builder.build(file);
+        Document document = builder.build(new InputStreamReader(file, "UTF-8"));
         Element rootElement = (Element) document.getRootElement().clone();
         remapDataServerReferences(rootElement, siteId);
         remapWorkbookGlobalReferences(rootElement, siteId, serverNameWithProtocol);
