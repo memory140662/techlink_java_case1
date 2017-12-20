@@ -48,6 +48,7 @@ public class TwbUtil {
 
     }
     public static void remap(File file, File output, String siteId, String serverNameWithProtocol) throws JDOMException, IOException {
+        System.out.println("Reamp: " + file.getName());
         if (file.getName().endsWith("twbx")) {
             remapZip(file, output,siteId,serverNameWithProtocol);
         } else {
