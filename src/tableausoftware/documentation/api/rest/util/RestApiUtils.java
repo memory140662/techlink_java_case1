@@ -98,15 +98,14 @@ public class RestApiUtils {
      */
     private static void initialize() {
         try {
-            m_properties.load(new FileInputStream("res/config.properties"));
             JAXBContext jaxbContext = JAXBContext.newInstance(TsRequest.class, TsResponse.class);
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(new File(m_properties.getProperty("server.schema.location")));
+            Schema schema = schemaFactory.newSchema(new File("./ts-api_2_7.xsd"));
             s_jaxbMarshaller = jaxbContext.createMarshaller();
             s_jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             s_jaxbUnmarshaller.setSchema(schema);
             s_jaxbMarshaller.setSchema(schema);
-        } catch (JAXBException | SAXException | IOException ex) {
+        } catch (JAXBException | SAXException ex) {
             throw new IllegalStateException("Failed to initialize the REST API");
         }
     }
