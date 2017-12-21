@@ -1,6 +1,5 @@
 package tw.com.techlink;
 
-import com.google.gson.Gson;
 import org.jdom2.JDOMException;
 import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
@@ -25,6 +24,7 @@ public class App {
         CONFIG_KEY_NAME.put("-du", "dbUsername");
         CONFIG_KEY_NAME.put("-dp", "dbPassword");
         CONFIG_KEY_NAME.put("-r", "replace");
+        CONFIG_KEY_NAME.put("-a", "action");
     }
     /**
      * -sd srcDir -od outputDir -tp tabcmdPath
@@ -42,13 +42,13 @@ public class App {
         start(config);
     }
 
-    private static Map<String, Object> getConfig(String[] args) {
+    private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
         Map<String, Object> config = new HashMap<>();
         List<Map<String, String>> replaces = new ArrayList<>();
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = args[index];
+            String arg = new String(args[index].getBytes("UTF-8"), "UTF-8");
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
@@ -60,8 +60,8 @@ public class App {
                         ++ index;
                         if (arg.equals("-r")) {
                             replace = new HashMap<>();
-                            for (int position = 1;index + position < args.length && !args[index].startsWith("-"); position ++) {
-                                replace.put(REPLACE_ATTR_NAME[(position - 1) % REPLACE_ATTR_NAME.length], args[index + position]);
+                            for (int position = 0;index + position < args.length && !args[index].startsWith("-"); position ++) {
+                                replace.put(REPLACE_ATTR_NAME[position % REPLACE_ATTR_NAME.length], args[index + position]);
                             }
                             replaces.add(replace);
                             config.put(key, replaces);
@@ -72,12 +72,13 @@ public class App {
                 }
             }
         }
+        System.out.println(config);
         return config;
     }
 
     private static void start(Map<String, Object> config) throws JDOMException, IOException {
         if (config != null) {
-            String action = "ALL";
+            String action = (config.get("action") != null) ? (String) config.get("action") : "ALL";
             System.out.println("***************************************");
             // 更換
             if (action.equalsIgnoreCase("ALL") ||
@@ -87,8 +88,9 @@ public class App {
                 final String srcDir = (String) ((config.get("srcDir") != null) ? config.get("srcDir") : "./");
                 final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
                 final List<String> targets = Arrays.asList("tds", "tdsx", "twb", "twbx");
-                final List<Map<String, String>> reaplce = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
-                new ReplaceUtil(reaplce, targets, srcDir, outputDir).start();
+                final List<Map<String, String>> replace = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
+                System.out.println(replace);
+                new ReplaceUtil(replace, targets, srcDir, outputDir).start();
             }
             // 登入
             if (action.equalsIgnoreCase("ALL") ||
