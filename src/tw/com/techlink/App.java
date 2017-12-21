@@ -72,7 +72,6 @@ public class App {
                 }
             }
         }
-        System.out.println(config);
         return config;
     }
 
