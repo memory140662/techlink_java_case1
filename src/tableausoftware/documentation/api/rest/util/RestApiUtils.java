@@ -101,7 +101,7 @@ public class RestApiUtils {
      * @return the URI builder
      */
     private static UriBuilder getApiUriBuilder() {
-        return UriBuilder.fromPath(server + "/api/2.7");
+        return UriBuilder.fromPath(server + "/api/2.6");
     }
     /**
      * Initializes the RestApiUtils. The initialize code loads values from the configuration
@@ -112,7 +112,7 @@ public class RestApiUtils {
 
             JAXBContext jaxbContext = JAXBContext.newInstance(TsRequest.class, TsResponse.class);
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(new File("./ts-api_2_7.xsd"));
+            Schema schema = schemaFactory.newSchema(new File("./ts-api_2_6.xsd"));
             s_jaxbMarshaller = jaxbContext.createMarshaller();
             s_jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             s_jaxbUnmarshaller.setSchema(schema);
