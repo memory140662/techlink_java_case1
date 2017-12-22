@@ -163,12 +163,13 @@ public class App {
                             (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
                             (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\" -save-db-password": ""
                     );
-                    System.out.println(String.format("\"%s\" publish  \"%s\" %s %s %s -o ",
+                    System.out.println(String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
                             tabcmd,
                             f.getAbsoluteFile().toString(),
                             "-n \"" + f.getName().substring(0, f.getName().lastIndexOf(".")) + "\"",
                             (projectName != null && projectName.trim().length() > 0) ? "-r \"" + projectName + "\"" : "",
-                            (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": ""
+                            (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
+                            ""
                     ));
                     result = execCmd(cmd);
                 }
