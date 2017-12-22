@@ -46,8 +46,14 @@ public class App {
             result = 1;
             e.printStackTrace();
         } finally {
+            delete(getConfig(args));
             System.exit(result);
         }
+    }
+
+    private static void delete(Map<String, Object> config) {
+        final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
+        ReplaceUtil.deleteFile(new File(outputDir));
     }
 
     private static Map<String, Object> getConfig(String[] args) {
