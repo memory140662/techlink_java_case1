@@ -177,10 +177,13 @@ public class App {
                             (projectName != null && projectName.trim().length() > 0) ? "-r \"" + projectName + "\"" : "",
                             (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": ""
                     ));
-                    result = execCmd(cmd);
+                    if (result == 0) {
+                        result = execCmd(cmd);
+                    } else {
+                        execCmd(cmd);
+                    }
                 }
             }
-            if (result == 1) return 1;
         }
         return result;
     }
