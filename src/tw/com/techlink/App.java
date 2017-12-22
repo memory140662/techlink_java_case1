@@ -5,6 +5,8 @@ import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -38,7 +40,8 @@ public class App {
      */
     public static void main(String[] args) throws IOException, InterruptedException, JDOMException {
         Map<String, Object> config = getConfig(args);
-        System.out.println("version: 2017/12/21 start.");
+        System.out.println(config);
+        System.out.println("version: 2017/12/22 start.");
         start(config);
     }
 
@@ -48,7 +51,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes("UTF-8"), "UTF-8");
+            String arg = new String(args[index].getBytes(StandardCharsets.US_ASCII), StandardCharsets.UTF_8);
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
@@ -60,7 +63,7 @@ public class App {
                         ++ index;
                         if (arg.equals("-r")) {
                             replace = new HashMap<>();
-                            for (int position = 0;index + position < args.length && !args[index].startsWith("-"); position ++) {
+                            for (int position = 0;index + position < args.length && !args[index + position].startsWith("-"); position ++) {
                                 replace.put(REPLACE_ATTR_NAME[position % REPLACE_ATTR_NAME.length], args[index + position]);
                             }
                             replaces.add(replace);
@@ -88,7 +91,6 @@ public class App {
                 final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
                 final List<String> targets = Arrays.asList("tds", "tdsx", "twb", "twbx");
                 final List<Map<String, String>> replace = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
-                System.out.println(replace);
                 new ReplaceUtil(replace, targets, srcDir, outputDir).start();
             }
             // 登入
