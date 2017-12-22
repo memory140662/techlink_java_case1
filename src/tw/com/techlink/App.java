@@ -41,15 +41,18 @@ public class App {
      */
     public static void main(String[] args) {
         int result = 0;
+        Map<String, Object> config = null;
         try {
-            Map<String, Object> config = getConfig(args);
+            config = getConfig(args);
             System.out.println("version: 2017/12/22 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
             System.err.println(e.getMessage());
         } finally {
-            delete(getConfig(args));
+            if (config != null && ("REP".equalsIgnoreCase((String) config.get("action")) || "PUBLISH".equalsIgnoreCase((String) config.get("action")))) {
+                delete(config);
+            }
             System.out.println("Process finished with exit code " + result);
             System.exit(result);
         }
@@ -153,14 +156,15 @@ public class App {
 
 
     private static int execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException, InterruptedException {
+        System.out.println("Exec Publish.");
         int result = 1;
         for (File f: file.listFiles()) {
             if (f.isDirectory()) {
                 execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
-                System.out.println("execPublish: " + file.getName());
+
                 if (f.getName().endsWith(type)) {
-                    if (type.endsWith("twb") || type.endsWith("twbx")) {
+                    if (type.endsWith(".twb") || type.endsWith(".twbx")) {
                         TwbUtil.remap(f, f, credential.getSite().getId(), server);
                     }
 
