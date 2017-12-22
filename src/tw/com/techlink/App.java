@@ -137,6 +137,7 @@ public class App {
                 final File file = new File(outputDir);
                 System.out.println("RestApiUtils init.");
                 restApiUtils = RestApiUtils.getInstance(server);
+                System.out.println("RestApiUtils init success.");
                 TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, "");
                 for (String target: targets) {
                     result = execPublish(file, target, null, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
@@ -157,7 +158,7 @@ public class App {
             if (f.isDirectory()) {
                 execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
-
+                System.out.println("execPublish: " + file.getName());
                 if (f.getName().endsWith(type)) {
                     if (type.endsWith("twb") || type.endsWith("twbx")) {
                         TwbUtil.remap(f, f, credential.getSite().getId(), server);

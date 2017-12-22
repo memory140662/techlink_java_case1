@@ -372,6 +372,7 @@ public class RestApiUtils {
     public TableauCredentialsType invokeSignIn(String username, String password, String contentUrl) {
 
         m_logger.info("Signing in to Tableau Server");
+        System.out.println("Signing in to Tableau Server");
 
         String url = Operation.SIGN_IN.getUrl();
 
@@ -384,7 +385,7 @@ public class RestApiUtils {
         // Verifies that the response has a credentials element
         if (response.getCredentials() != null) {
             m_logger.info("Sign in is successful!");
-
+            System.out.println("Sign in is successful!");
             return response.getCredentials();
         }
 
