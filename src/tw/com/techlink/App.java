@@ -9,12 +9,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
 public class App {
 
     private static RestApiUtils restApiUtils = null;
+    private static String OUTPUT_DIR = "outputDir";
     private static final String[] REPLACE_ATTR_NAME = {"targetAttr", "targetNewValue", "targetOldValue"};
     private static final Map<String, String> CONFIG_KEY_NAME = new HashMap<>();
     static {
@@ -45,7 +47,8 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2017/12/22 start.");
+            System.out.println("version: 2017/12/23 start.");
+            System.out.println(new File(config.get("outputDir").toString()).getParentFile().getName());
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -61,7 +64,21 @@ public class App {
 
     private static void delete(Map<String, Object> config) {
         final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
-        ReplaceUtil.deleteFile(new File(outputDir));
+        if (outputDir.endsWith(".twb") || outputDir.endsWith(".twbx")
+                || outputDir.endsWith(".tds") || outputDir.endsWith(".tdsx") ||outputDir.endsWith(".zip")) {
+            if (ReplaceUtil.deleteFile(new File(outputDir).getParentFile())) {
+                if (!new File(outputDir).getParentFile().delete()) {
+                    delete(config);
+                }
+            }
+        } else {
+            if (ReplaceUtil.deleteFile(new File(outputDir))) {
+                if (!new File(outputDir).delete()) {
+                    delete(config);
+                }
+            }
+        }
+
     }
 
     private static Map<String, Object> getConfig(String[] args) {
@@ -92,6 +109,9 @@ public class App {
                     }
                 }
             }
+        }
+        if (config.get("outputDir") == null) {
+            config.put("outputDir", System.getProperty("java.io.tmpdir") + "/" + OUTPUT_DIR);
         }
         return config;
     }

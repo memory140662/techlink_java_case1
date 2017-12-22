@@ -38,7 +38,13 @@ public class ReplaceUtil {
             File f = new File(src.getAbsoluteFile().toString());
             if (f.isFile()) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(src.getAbsoluteFile().toString()), encode));
-                File outputFile = new File(dist + "/" + f.getName());
+                File outputFile = null;
+                if (dist.getName().endsWith(".twb") || dist.getName().endsWith(".twbx")
+                        || dist.getName().endsWith(".tds") || dist.getName().endsWith(".tdsx")) {
+                    outputFile = dist;
+                } else {
+                    outputFile = new File(dist + "/" + f.getName());
+                }
                 FileWriter fw = new FileWriter(outputFile);
                 while (br.ready()) {
                     fw.append(getReplaceString(replace, br.readLine())).append("\n");
@@ -73,7 +79,13 @@ public class ReplaceUtil {
         ZipFile zipFile = new ZipFile(src.getAbsoluteFile().toString());
         System.out.println("進件檔案(壓縮檔)：" + src.getAbsoluteFile().toString());
         File outputFile;
-        outputFile = new File(dist.getPath() + "/" + src.getName());
+        if (dist.getName().endsWith(".twb") || dist.getName().endsWith(".twbx")
+                || dist.getName().endsWith(".tds") || dist.getName().endsWith(".tdsx") || dist.getName().endsWith(".zip")) {
+            outputFile = dist;
+            dist.getParentFile().mkdirs();
+        } else {
+            outputFile = new File(dist.getPath() + "/" + src.getName());
+        }
         if (!outputFile.exists()) {
             outputFile.createNewFile();
         } else {
@@ -187,8 +199,8 @@ public class ReplaceUtil {
                 System.out.println("***************************************");
             }
         } else {
-            if (!dist.getName().endsWith(".tds") && !dist.getName().endsWith(".tdsx")
-                    && !dist.getName().endsWith(".twb") && !dist.getName().endsWith(".twbx")) {
+            if (!file.getName().endsWith(".tds") && !file.getName().endsWith(".tdsx")
+                    && !file.getName().endsWith(".twb") && !file.getName().endsWith(".twbx") && !file.getName().endsWith(".zip")) {
                 System.out.println("檔案格式錯誤.");
                 throw new RuntimeException("檔案格式錯誤.");
             }
@@ -198,11 +210,12 @@ public class ReplaceUtil {
     }
 
     private boolean execReplace(File dist, File f) {
-        if (f.getName().endsWith(".tdsx") || f.getName().endsWith(".twbx")) {
+        System.out.println(f.getName());
+        if (f.getName().endsWith(".tdsx") || f.getName().endsWith(".twbx") || f.getName().endsWith(".zip")) {
             try {
                 replaceAttrWithZip(f, dist, replace);
             } catch (IOException e) {
-                System.err.println("壓縮檔案異常：".concat(e.getMessage()));
+                System.err.println("壓縮檔案異常：".concat(e.toString()));
                 e.printStackTrace();
                 return true;
             }
