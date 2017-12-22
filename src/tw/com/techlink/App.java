@@ -103,7 +103,7 @@ public class App {
                 final String outputDir = (String) ((config.get("outputDir") != null) ? config.get("outputDir") : "./output");
                 final List<String> targets = Arrays.asList("tds", "tdsx", "twb", "twbx");
                 final List<Map<String, String>> replace = (config.get("replace") != null) ? (List<Map<String, String>>) config.get("replace") : new ArrayList<Map<String, String>>();
-                new ReplaceUtil(replace, targets, srcDir, outputDir).start();
+                result = new ReplaceUtil(replace, targets, srcDir, outputDir).start();
             }
             // 登入
             if (action.equalsIgnoreCase("ALL") ||

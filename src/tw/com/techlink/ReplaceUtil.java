@@ -177,13 +177,13 @@ public class ReplaceUtil {
         }
     }
 
-    public void start() {
+    public int start() {
         File dist = new File(outputDir);
         File file = new File(srcDir);
         System.out.println("來源目錄: " + file.getAbsolutePath());
         if (!file.exists()) {
             System.out.println("來源目錄不存在!");
-            return;
+            return 1;
         }
         System.out.println("輸出目錄: " + dist.getAbsolutePath());
         System.out.println("***************************************");
@@ -194,6 +194,8 @@ public class ReplaceUtil {
                     replaceAttrWithZip(f, dist, replace);
                 } catch (IOException e) {
                     System.err.println("壓縮檔案異常：".concat(e.getMessage()));
+                    e.printStackTrace();
+                    return 1;
                 }
             } else {
                 replaceAttr(replace, dist, f);
@@ -201,5 +203,6 @@ public class ReplaceUtil {
 
             System.out.println("***************************************");
         }
+        return 0;
     }
 }
