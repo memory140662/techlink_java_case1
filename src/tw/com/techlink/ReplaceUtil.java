@@ -68,7 +68,11 @@ public class ReplaceUtil {
     private void replaceAttrWithZip(File src, File dist, List<Map<String, String>> replace) throws IOException {
         ZipFile zipFile = new ZipFile(src.getAbsoluteFile().toString());
         System.out.println("進件檔案(壓縮檔)：" + src.getAbsoluteFile().toString());
+        if (dist.exists()) {
+            dist.mkdirs();
+        }
         File outputFile = new File(dist.getPath() + "/" + src.getName());
+        System.out.println(outputFile.toPath());
         if (!outputFile.exists()) {
             outputFile.createNewFile();
         }
