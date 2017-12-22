@@ -50,7 +50,7 @@ public class App {
             result = 1;
             System.err.println(e.getMessage());
         } finally {
-            if (config != null && ("REP".equalsIgnoreCase((String) config.get("action")) || "PUBLISH".equalsIgnoreCase((String) config.get("action")))) {
+            if (config != null && ("ALL".equalsIgnoreCase((String) config.get("action")) || "PUBLISH".equalsIgnoreCase((String) config.get("action")))) {
                 delete(config);
             }
             System.out.println("Process finished with exit code " + result);
