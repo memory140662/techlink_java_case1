@@ -218,6 +218,10 @@ public class App {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(cmd);
         int res = process.waitFor();
+        BufferedReader ebr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        while (ebr.ready()) {
+            System.err.println(ebr.readLine());
+        }
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (br.ready()) {
             System.out.println(br.readLine());

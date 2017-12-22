@@ -69,6 +69,9 @@ public class ReplaceUtil {
         ZipFile zipFile = new ZipFile(src.getAbsoluteFile().toString());
         System.out.println("進件檔案(壓縮檔)：" + src.getAbsoluteFile().toString());
         File outputFile = new File(dist.getPath() + "/" + src.getName());
+        if (!outputFile.exists()) {
+            outputFile.createNewFile();
+        }
         ZipOutputStream zos = new ZipOutputStream(outputFile);
         Enumeration enumeration = zipFile.getEntries();
         while (enumeration.hasMoreElements()) {
