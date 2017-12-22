@@ -112,6 +112,9 @@ public class RestApiUtils {
 
             JAXBContext jaxbContext = JAXBContext.newInstance(TsRequest.class, TsResponse.class);
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            if (!new File("./ts-api_2_6.xsd").exists()) {
+                System.err.println("ts-api_2_6.xsd not found.");
+            }
             Schema schema = schemaFactory.newSchema(new File("./ts-api_2_6.xsd"));
             s_jaxbMarshaller = jaxbContext.createMarshaller();
             s_jaxbUnmarshaller = jaxbContext.createUnmarshaller();
