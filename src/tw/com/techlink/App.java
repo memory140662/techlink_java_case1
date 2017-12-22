@@ -51,7 +51,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes(StandardCharsets.US_ASCII), StandardCharsets.US_ASCII);
+            String arg = new String(args[index].getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
