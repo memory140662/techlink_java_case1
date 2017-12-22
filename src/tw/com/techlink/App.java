@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -226,11 +227,11 @@ public class App {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(cmd);
         int res = process.waitFor();
-        BufferedReader ebr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        BufferedReader ebr = new BufferedReader(new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8));
         while (ebr.ready()) {
             System.err.println(ebr.readLine());
         }
-        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
         while (br.ready()) {
             System.out.println(br.readLine());
         }
