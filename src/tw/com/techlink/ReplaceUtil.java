@@ -110,6 +110,7 @@ public class ReplaceUtil {
                         } else {
                             childs = childs.replaceAll("(['\"]+).*(['\"]+)", String.format("$1%s$2", targetNewValue));
                             childs = childs.replaceAll("(&apos;+).*(&apos;+)", String.format("$1%s$2", targetNewValue));
+                            childs = childs.replaceAll("(&quot;+).*(&quot;+)", String.format("$1%s$2", targetNewValue));
                         }
                         System.out.println(childs);
                     }
