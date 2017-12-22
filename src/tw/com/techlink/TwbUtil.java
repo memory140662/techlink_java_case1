@@ -42,10 +42,9 @@ public class TwbUtil {
             }
         }
         outputStream.close();
-        Files.copy(tmpFile.getAbsoluteFile().toPath(), output.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(tmpFile.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
         Files.deleteIfExists(tmpFile.toPath());
         Files.deleteIfExists(tmp.toPath());
-
     }
     public static void remap(File file, File output, String siteId, String serverNameWithProtocol) throws JDOMException, IOException {
         System.out.println("Reamp: " + file.getName());

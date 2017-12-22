@@ -44,7 +44,7 @@ public class App {
             result = start(config);
         } catch(Exception e) {
             result = 1;
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         } finally {
             delete(getConfig(args));
             System.out.println("Process finished with exit code " + result);
@@ -132,6 +132,7 @@ public class App {
                 final String tabcmdPath = (String) config.get("tabcmdPath");
                 final String projectName = (String) config.get("projectName");
                 final File file = new File(outputDir);
+                System.out.println("RestApiUtils init.");
                 restApiUtils = RestApiUtils.getInstance(server);
                 TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, null);
                 for (String target: targets) {

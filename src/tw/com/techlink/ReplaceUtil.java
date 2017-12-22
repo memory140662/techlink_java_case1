@@ -69,23 +69,13 @@ public class ReplaceUtil {
     private void replaceAttrWithZip(File src, File dist, List<Map<String, String>> replace) throws IOException {
         ZipFile zipFile = new ZipFile(src.getAbsoluteFile().toString());
         System.out.println("進件檔案(壓縮檔)：" + src.getAbsoluteFile().toString());
-        if (dist.exists() && !dist.getName().contains(".twb") && !dist.getName().contains(".twbx")
-                && !dist.getName().contains(".tds") && !dist.getName().contains(".tdsx")) {
-            dist.mkdirs();
-        }
         File outputFile;
-        if (!dist.getName().contains(".twb") && !dist.getName().contains(".twbx")
-                && !dist.getName().contains(".tds") && !dist.getName().contains(".tdsx")) {
-            outputFile = new File(dist.getPath() + "/" + src.getName());
-        } else {
-            outputFile = dist;
-        }
+        outputFile = new File(dist.getPath() + "/" + src.getName());
         if (!outputFile.exists()) {
             outputFile.createNewFile();
         } else {
-            if (deleteFile(outputFile)) {
-                outputFile.createNewFile();
-            }
+            outputFile.delete();
+            outputFile.createNewFile();
         }
         ZipOutputStream zos = new ZipOutputStream(outputFile);
         Enumeration enumeration = zipFile.getEntries();
