@@ -59,6 +59,7 @@ public class ReplaceUtil {
             dist.mkdir();
         } else {
             if (deleteFile(dist)) {
+                dist.delete();
                 dist.mkdir();
             }
         }
@@ -68,13 +69,23 @@ public class ReplaceUtil {
     private void replaceAttrWithZip(File src, File dist, List<Map<String, String>> replace) throws IOException {
         ZipFile zipFile = new ZipFile(src.getAbsoluteFile().toString());
         System.out.println("進件檔案(壓縮檔)：" + src.getAbsoluteFile().toString());
-        if (dist.exists()) {
+        if (dist.exists() && !dist.getName().contains(".twb") && !dist.getName().contains(".twbx")
+                && !dist.getName().contains(".tds") && !dist.getName().contains(".tdsx")) {
             dist.mkdirs();
         }
-        File outputFile = new File(dist.getPath() + "/" + src.getName());
-        System.out.println(outputFile.toPath());
+        File outputFile;
+        if (!dist.getName().contains(".twb") && !dist.getName().contains(".twbx")
+                && !dist.getName().contains(".tds") && !dist.getName().contains(".tdsx")) {
+            outputFile = new File(dist.getPath() + "/" + src.getName());
+        } else {
+            outputFile = dist;
+        }
         if (!outputFile.exists()) {
             outputFile.createNewFile();
+        } else {
+            if (deleteFile(outputFile)) {
+                outputFile.createNewFile();
+            }
         }
         ZipOutputStream zos = new ZipOutputStream(outputFile);
         Enumeration enumeration = zipFile.getEntries();
@@ -178,11 +189,16 @@ public class ReplaceUtil {
         System.out.println("***************************************");
         makeOutputDir(dist);
         for (File f : file.listFiles(new MyFilter(targets))) {
-            try {
-                replaceAttrWithZip(f, dist, replace);
-            } catch (IOException e) {
+            if (f.getName().endsWith(".tdsx") || f.getName().endsWith(".twbx")) {
+                try {
+                    replaceAttrWithZip(f, dist, replace);
+                } catch (IOException e) {
+                    System.err.println("壓縮檔案異常：".concat(e.getMessage()));
+                }
+            } else {
                 replaceAttr(replace, dist, f);
             }
+
             System.out.println("***************************************");
         }
     }
