@@ -47,6 +47,7 @@ public class App {
             e.printStackTrace();
         } finally {
             delete(getConfig(args));
+            System.out.println("Process finished with exit code " + result);
             System.exit(result);
         }
     }
