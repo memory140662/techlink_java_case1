@@ -1,7 +1,10 @@
 package tw.com.techlink;
 
 import org.jdom2.JDOMException;
+import tableausoftware.documentation.api.rest.bindings.ProjectListType;
+import tableausoftware.documentation.api.rest.bindings.ProjectType;
 import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
+import tableausoftware.documentation.api.rest.bindings.WorkbookType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
 import java.io.*;
@@ -156,7 +159,6 @@ public class App {
             } else {
 
                 if (f.getName().endsWith(type)) {
-
                     if (type.endsWith("twb") || type.endsWith("twbx")) {
                         TwbUtil.remap(f, f, credential.getSite().getId(), server);
                     }
