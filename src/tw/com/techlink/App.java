@@ -1,13 +1,13 @@
 package tw.com.techlink;
 
 import org.jdom2.JDOMException;
-import tableausoftware.documentation.api.rest.bindings.ProjectListType;
-import tableausoftware.documentation.api.rest.bindings.ProjectType;
 import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
-import tableausoftware.documentation.api.rest.bindings.WorkbookType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -157,10 +157,10 @@ public class App {
 
     private static int execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException, InterruptedException {
         System.out.println("Exec Publish.");
-        int result = 1;
+        int result = 0;
         for (File f: file.listFiles()) {
             if (f.isDirectory()) {
-                execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
+                result = execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
 
                 if (f.getName().endsWith(type)) {
