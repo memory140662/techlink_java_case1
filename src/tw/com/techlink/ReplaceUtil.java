@@ -55,12 +55,15 @@ public class ReplaceUtil {
     }
 
     private void makeOutputDir(File dist) {
-        if (!dist.exists()) {
-            dist.mkdir();
-        } else {
-            if (deleteFile(dist)) {
-                dist.delete();
+        if (!dist.getName().endsWith(".tds") && !dist.getName().endsWith(".tdsx")
+                && !dist.getName().endsWith(".twb") && !dist.getName().endsWith(".twbx") || dist.isDirectory()) {
+            if (!dist.exists()) {
                 dist.mkdir();
+            } else {
+                if (deleteFile(dist)) {
+                    dist.delete();
+                    dist.mkdir();
+                }
             }
         }
     }
@@ -178,21 +181,34 @@ public class ReplaceUtil {
         System.out.println("輸出目錄: " + dist.getAbsolutePath());
         System.out.println("***************************************");
         makeOutputDir(dist);
-        for (File f : file.listFiles(new MyFilter(targets))) {
-            if (f.getName().endsWith(".tdsx") || f.getName().endsWith(".twbx")) {
-                try {
-                    replaceAttrWithZip(f, dist, replace);
-                } catch (IOException e) {
-                    System.err.println("壓縮檔案異常：".concat(e.getMessage()));
-                    e.printStackTrace();
-                    return 1;
-                }
-            } else {
-                replaceAttr(replace, dist, f);
+        if (file.isDirectory()) {
+            for (File f : file.listFiles(new MyFilter(targets))) {
+                if (execReplace(dist, f)) return 1;
+                System.out.println("***************************************");
             }
-
-            System.out.println("***************************************");
+        } else {
+            if (!dist.getName().endsWith(".tds") && !dist.getName().endsWith(".tdsx")
+                    && !dist.getName().endsWith(".twb") && !dist.getName().endsWith(".twbx")) {
+                System.out.println("檔案格式錯誤.");
+                throw new RuntimeException("檔案格式錯誤.");
+            }
+            if (execReplace(dist, file)) return 1;
         }
         return 0;
+    }
+
+    private boolean execReplace(File dist, File f) {
+        if (f.getName().endsWith(".tdsx") || f.getName().endsWith(".twbx")) {
+            try {
+                replaceAttrWithZip(f, dist, replace);
+            } catch (IOException e) {
+                System.err.println("壓縮檔案異常：".concat(e.getMessage()));
+                e.printStackTrace();
+                return true;
+            }
+        } else {
+            replaceAttr(replace, dist, f);
+        }
+        return false;
     }
 }
