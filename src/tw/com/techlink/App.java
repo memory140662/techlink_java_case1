@@ -36,11 +36,11 @@ public class App {
      * @throws InterruptedException
      * @throws JDOMException
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
-        Map<String, Object> config = getConfig(args);
-        System.out.println("version: 2017/12/22 start.");
+    public static void main(String[] args) {
         int result = 0;
         try {
+            Map<String, Object> config = getConfig(args);
+            System.out.println("version: 2017/12/22 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -60,8 +60,7 @@ public class App {
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
-                    System.err.println("指令錯誤：" + arg);
-                    break;
+                    throw new RuntimeException("指定錯誤");
                 }
                 if (args.length > index + 1) {
                     if (!args[index + 1].startsWith("-")) {
@@ -164,7 +163,7 @@ public class App {
                             (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
                             (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\" -save-db-password": ""
                     );
-                    System.out.println(String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
+                    System.out.println(String.format("\"%s\" publish  \"%s\" %s %s %s -o ",
                             tabcmd,
                             f.getAbsoluteFile().toString(),
                             "-n \"" + f.getName().substring(0, f.getName().lastIndexOf(".")) + "\"",
