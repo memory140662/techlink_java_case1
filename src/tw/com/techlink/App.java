@@ -134,7 +134,7 @@ public class App {
                 final File file = new File(outputDir);
                 System.out.println("RestApiUtils init.");
                 restApiUtils = RestApiUtils.getInstance(server);
-                TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, null);
+                TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, "");
                 for (String target: targets) {
                     result = execPublish(file, target, null, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
                 }
