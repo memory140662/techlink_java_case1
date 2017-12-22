@@ -122,7 +122,7 @@ public class ReplaceUtil {
         return line;
     }
 
-    public boolean deleteFile(File file) {
+    public static boolean deleteFile(File file) {
         boolean flag = false;
         if (file.isDirectory()) {
             File[] files = file.listFiles();

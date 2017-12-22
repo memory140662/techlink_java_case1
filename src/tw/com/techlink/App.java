@@ -5,8 +5,6 @@ import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -38,14 +36,21 @@ public class App {
      * @throws InterruptedException
      * @throws JDOMException
      */
-    public static void main(String[] args) throws IOException, InterruptedException, JDOMException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Map<String, Object> config = getConfig(args);
-        System.out.println(config);
         System.out.println("version: 2017/12/22 start.");
-        start(config);
+        int result = 0;
+        try {
+            result = start(config);
+        } catch(Exception e) {
+            result = 1;
+            e.printStackTrace();
+        } finally {
+            System.exit(result);
+        }
     }
 
-    private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
+    private static Map<String, Object> getConfig(String[] args) {
         Map<String, Object> config = new HashMap<>();
         List<Map<String, String>> replaces = new ArrayList<>();
         String key = null;
@@ -78,7 +83,8 @@ public class App {
         return config;
     }
 
-    private static void start(Map<String, Object> config) throws JDOMException, IOException {
+    private static int start(Map<String, Object> config) throws JDOMException, IOException, InterruptedException {
+        int result = 0;
         if (config != null) {
             String action = (config.get("action") != null) ? (String) config.get("action") : "ALL";
             System.out.println("***************************************");
@@ -102,7 +108,7 @@ public class App {
                 final String password = (String) config.get("password");
                 final String server = (String) config.get("server");
                 final String tabcmdPath = (String) config.get("tabcmdPath");
-                execLogin(username, password, server, tabcmdPath);
+                result = execLogin(username, password, server, tabcmdPath);
                 System.out.println("***************************************");
             }
 
@@ -123,7 +129,7 @@ public class App {
                 restApiUtils = RestApiUtils.getInstance(server);
                 TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, null);
                 for (String target: targets) {
-                    execPublish(file, target, null, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
+                    result = execPublish(file, target, null, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
                 }
                 restApiUtils.invokeSignOut(credential);
                 restApiUtils = null;
@@ -131,10 +137,12 @@ public class App {
             }
 
         }
+        return result;
     }
 
 
-    private static void execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException {
+    private static int execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException, InterruptedException {
+        int result = 1;
         for (File f: file.listFiles()) {
             if (f.isDirectory()) {
                 execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
@@ -146,24 +154,29 @@ public class App {
                         TwbUtil.remap(f, f, credential.getSite().getId(), server);
                     }
 
-                    try {
-                        String tabcmd = getTabcmd(tabcmdPath);
-                        System.out.println("tabcmd: " + tabcmd);
-                        String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
-                                tabcmd,
-                                f.getAbsoluteFile().toString(),
-                                "-n \"" + f.getName().substring(0, f.getName().lastIndexOf(".")) + "\"",
-                                (projectName != null && projectName.trim().length() > 0) ? "-r \"" + projectName + "\"" : "",
-                                (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
-                                (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\" -save-db-password": ""
-                        );
-                        execCmd(cmd);
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                    }
+                    String tabcmd = getTabcmd(tabcmdPath);
+                    System.out.println("tabcmd: " + tabcmd);
+                    String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
+                            tabcmd,
+                            f.getAbsoluteFile().toString(),
+                            "-n \"" + f.getName().substring(0, f.getName().lastIndexOf(".")) + "\"",
+                            (projectName != null && projectName.trim().length() > 0) ? "-r \"" + projectName + "\"" : "",
+                            (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": "",
+                            (dbPassword!= null && dbPassword.trim().length() > 0) ? "--db-password \"" + dbPassword + "\" -save-db-password": ""
+                    );
+                    System.out.println(String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
+                            tabcmd,
+                            f.getAbsoluteFile().toString(),
+                            "-n \"" + f.getName().substring(0, f.getName().lastIndexOf(".")) + "\"",
+                            (projectName != null && projectName.trim().length() > 0) ? "-r \"" + projectName + "\"" : "",
+                            (dbUsername!= null && dbUsername.trim().length() > 0) ? "--db-username \"" + dbUsername + "\"": ""
+                    ));
+                    result = execCmd(cmd);
                 }
             }
+            if (result == 1) return 1;
         }
+        return result;
     }
 
     private static String getTabcmd(String tabcmdPath) {
@@ -182,27 +195,24 @@ public class App {
         return tabcmdPath;
     }
 
-    private static void execLogin(String username, String password, String server, String tabcmdPath){
-        try {
-            String tabcmd = getTabcmd(tabcmdPath);
-            System.out.println("tabcmd: " + tabcmd);
-            String cmd = String.format("\"%s\" login -s %s -u %s -p %s",
-                    tabcmd, server, username, password);
-            execCmd(cmd);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+    private static int execLogin(String username, String password, String server, String tabcmdPath) throws IOException, InterruptedException {
+        String tabcmd = getTabcmd(tabcmdPath);
+        System.out.println("tabcmd: " + tabcmd);
+        String cmd = String.format("\"%s\" login -s %s -u %s -p %s",
+                tabcmd, server, username, password);
+        System.out.println(String.format("\"%s\" login -s %s -u %s",
+                tabcmd, server, username));
+        return execCmd(cmd);
     }
 
-    private static void execCmd(String cmd) throws IOException, InterruptedException {
-        System.out.println(cmd);
+    private static int execCmd(String cmd) throws IOException, InterruptedException {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(cmd);
-        process.waitFor();
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (br.ready()) {
             System.out.println(br.readLine());
         }
+        return process.exitValue();
     }
 
 }
