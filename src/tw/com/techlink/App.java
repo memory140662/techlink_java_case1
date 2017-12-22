@@ -208,6 +208,7 @@ public class App {
     private static int execCmd(String cmd) throws IOException, InterruptedException {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(cmd);
+        process.waitFor();
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (br.ready()) {
             System.out.println(br.readLine());
