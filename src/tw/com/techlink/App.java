@@ -4,12 +4,8 @@ import org.jdom2.JDOMException;
 import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -42,12 +38,12 @@ public class App {
      * @throws InterruptedException
      * @throws JDOMException
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedEncodingException {
         int result = 0;
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2017/12/23 start.");
+            System.out.println("version: 2018/01/04 start.");
             System.out.println(new File(config.get("outputDir").toString()).getParentFile().getName());
             result = start(config);
         } catch(Exception e) {
@@ -87,7 +83,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = args[index];
+            String arg = new String(args[index].getBytes(), StandardCharsets.US_ASCII);
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
