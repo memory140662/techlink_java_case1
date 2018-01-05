@@ -40,7 +40,7 @@ public class App {
      * @throws InterruptedException
      * @throws JDOMException
      */
-    public static void main(String[] args) throws UnsupportedEncodingException {
+    public static void main(String[] args) {
         int result = 0;
         Map<String, Object> config = null;
         try {
