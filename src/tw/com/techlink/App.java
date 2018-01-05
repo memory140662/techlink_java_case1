@@ -15,6 +15,7 @@ public class App {
     private static String OUTPUT_DIR = "outputDir";
     private static final String[] REPLACE_ATTR_NAME = {"targetAttr", "targetNewValue", "targetOldValue"};
     private static final Map<String, String> CONFIG_KEY_NAME = new HashMap<>();
+    private static final String ANSI = "Cp1252";
     static {
         CONFIG_KEY_NAME.put("-sd", "srcDir");
         CONFIG_KEY_NAME.put("-od", "outputDir");
@@ -34,17 +35,17 @@ public class App {
      * -s server -du dbUsername -dp dbPassword
      * -r replace
      * @param args
+     * @throws UnsupportedEncodingException 
      * @throws IOException
      * @throws InterruptedException
      * @throws JDOMException
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedEncodingException {
         int result = 0;
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
             System.out.println("version: 2018/01/05 start.");
-            System.out.println(new File(config.get("outputDir").toString()).getParentFile().getName());
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -83,7 +84,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes(), System.getProperty("file.encoding"));
+            String arg = new String(args[index].getBytes(), ANSI).replace("\\", "/");
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
