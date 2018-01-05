@@ -38,12 +38,12 @@ public class App {
      * @throws InterruptedException
      * @throws JDOMException
      */
-    public static void main(String[] args) throws UnsupportedEncodingException {
+    public static void main(String[] args) {
         int result = 0;
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/01/04 start.");
+            System.out.println("version: 2018/01/05 start.");
             System.out.println(new File(config.get("outputDir").toString()).getParentFile().getName());
             result = start(config);
         } catch(Exception e) {
@@ -77,13 +77,13 @@ public class App {
 
     }
 
-    private static Map<String, Object> getConfig(String[] args) {
+    private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
         Map<String, Object> config = new HashMap<>();
         List<Map<String, String>> replaces = new ArrayList<>();
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes(), StandardCharsets.US_ASCII);
+            String arg = new String(args[index].getBytes(), System.getProperty("file.encoding"));
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
