@@ -28,6 +28,7 @@ public class App {
         CONFIG_KEY_NAME.put("-dp", "dbPassword");
         CONFIG_KEY_NAME.put("-r", "replace");
         CONFIG_KEY_NAME.put("-a", "action");
+        CONFIG_KEY_NAME.put("-t", "site");
     }
     /**
      * -sd srcDir -od outputDir -tp tabcmdPath
@@ -45,7 +46,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/01/05 start.");
+            System.out.println("version: 2018/01/18 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -138,7 +139,8 @@ public class App {
                 final String password = (String) config.get("password");
                 final String server = (String) config.get("server");
                 final String tabcmdPath = (String) config.get("tabcmdPath");
-                result = execLogin(username, password, server, tabcmdPath);
+                final String site = (String) config.get("site");
+                result = execLogin(username, password, server, tabcmdPath, site);
                 System.out.println("***************************************");
             }
 
@@ -159,7 +161,7 @@ public class App {
                 System.out.println("RestApiUtils init.");
                 restApiUtils = RestApiUtils.getInstance(server);
                 System.out.println("RestApiUtils init success.");
-                TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, "");
+                TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, server);
                 for (String target: targets) {
                     result = execPublish(file, target, null, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
                 }
@@ -230,13 +232,15 @@ public class App {
         return tabcmdPath;
     }
 
-    private static int execLogin(String username, String password, String server, String tabcmdPath) throws IOException, InterruptedException {
+    private static int execLogin(String username, String password, String server, String tabcmdPath, String site) throws IOException, InterruptedException {
         String tabcmd = getTabcmd(tabcmdPath);
         System.out.println("tabcmd: " + tabcmd);
-        String cmd = String.format("\"%s\" login -s %s -u %s -p %s",
-                tabcmd, server, username, password);
-        System.out.println(String.format("\"%s\" login -s %s -u %s",
-                tabcmd, server, username));
+        String cmd = String.format("\"%s\" login -s %s -u %s -p %s %s",
+                tabcmd, server, username, password,
+                (site != null && site.trim().length() > 0) ? "-t " + site : ""
+            );
+        System.out.println(String.format("\"%s\" login -s %s -u %s %s",
+                tabcmd, server, username, (site != null && site.trim().length() > 0) ? "-t " + site : ""));
         return execCmd(cmd);
     }
 
