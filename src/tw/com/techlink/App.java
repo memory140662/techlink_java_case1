@@ -46,7 +46,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/01/18 start.");
+            System.out.println("version: 2018/01/24 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -85,7 +85,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes(), ANSI).replace("\\", "/");
+            String arg = new String(args[index].getBytes(ANSI)).replace("\\", "/");
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
