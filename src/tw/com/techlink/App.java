@@ -85,7 +85,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes(ANSI)).replace("\\", "/");
+            String arg = new String(args[index].getBytes(), ANSI).replace("\\", "/");
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
@@ -248,11 +248,11 @@ public class App {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(cmd);
         int res = process.waitFor();
-        BufferedReader ebr = new BufferedReader(new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8));
+        BufferedReader ebr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         while (ebr.ready()) {
             System.err.println(ebr.readLine());
         }
-        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
+        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (br.ready()) {
             System.out.println(br.readLine());
         }
