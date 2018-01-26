@@ -46,11 +46,11 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/01/24 start.");
+            System.out.println("version: 2018/01/26 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         } finally {
             if (config != null && ("ALL".equalsIgnoreCase((String) config.get("action")) || "PUBLISH".equalsIgnoreCase((String) config.get("action")))) {
                 delete(config);
@@ -85,7 +85,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes(), ANSI).replace("\\", "/");
+            String arg = new String(args[index].getBytes(ANSI)).replace("\\", "/");
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
@@ -176,9 +176,11 @@ public class App {
 
 
     private static int execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException, InterruptedException {
-        System.out.println("Exec Publish.");
         int result = 0;
+        String tabcmd = getTabcmd(tabcmdPath);
+        System.out.println("tabcmd: " + tabcmd);
         for (File f: file.listFiles()) {
+            if (f == null) continue;
             if (f.isDirectory()) {
                 result = execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
@@ -188,8 +190,6 @@ public class App {
                         TwbUtil.remap(f, f, credential.getSite().getId(), server);
                     }
 
-                    String tabcmd = getTabcmd(tabcmdPath);
-                    System.out.println("tabcmd: " + tabcmd);
                     String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
                             tabcmd,
                             f.getAbsoluteFile().toString(),
