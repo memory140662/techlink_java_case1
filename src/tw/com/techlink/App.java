@@ -80,7 +80,13 @@ public class App {
     }
 
     private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
-        Map<String, Object> config = new HashMap<>();
+        String[] argsC = new String[args.length];
+        for (int index = 0; index < args.length; index++) {
+            argsC[index] = args[index]
+                    .replace("\\\\", "/")
+                    .replace("\\", "/");
+        }
+        args = argsC;Map<String, Object> config = new HashMap<>();
         List<Map<String, String>> replaces = new ArrayList<>();
         String key = null;
         Map<String, String> replace = null;
@@ -165,8 +171,8 @@ public class App {
                 for (String target: targets) {
                     result = execPublish(file, target, null, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
                 }
-                restApiUtils.invokeSignOut(credential);
-                restApiUtils = null;
+//                restApiUtils.invokeSignOut(credential);
+//                restApiUtils = null;
                 System.out.println("***************************************");
             }
 
