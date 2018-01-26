@@ -83,10 +83,10 @@ public class App {
         String[] argsC = new String[args.length];
         for (int index = 0; index < args.length; index++) {
             argsC[index] = args[index]
-                    .replace("\\\\", "/")
-                    .replace("\\", "/");
+                    .replace("\\", "\\\\");
         }
-        args = argsC;Map<String, Object> config = new HashMap<>();
+        args = argsC
+        ;Map<String, Object> config = new HashMap<>();
         List<Map<String, String>> replaces = new ArrayList<>();
         String key = null;
         Map<String, String> replace = null;
