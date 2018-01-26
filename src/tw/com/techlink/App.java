@@ -81,14 +81,10 @@ public class App {
 
     private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
         String[] argsC = new String[args.length];
-        System.out.println("*************************config*******************");
         for (int index = 0; index < args.length; index++) {
             argsC[index] = args[index]
                     .replace("\\", "\\\\");
-            System.out.println(args[index]);
-            System.out.println(argsC[index]);
         }
-        System.out.println("********************************************");
         args = argsC
         ;Map<String, Object> config = new HashMap<>();
         List<Map<String, String>> replaces = new ArrayList<>();
