@@ -81,10 +81,14 @@ public class App {
 
     private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
         String[] argsC = new String[args.length];
+        System.out.println("*************************config*******************");
         for (int index = 0; index < args.length; index++) {
             argsC[index] = args[index]
                     .replace("\\", "\\\\");
+            System.out.println(args[index]);
+            System.out.println(argsC[index]);
         }
+        System.out.println("********************************************");
         args = argsC
         ;Map<String, Object> config = new HashMap<>();
         List<Map<String, String>> replaces = new ArrayList<>();
@@ -92,7 +96,6 @@ public class App {
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
             String arg = new String(args[index].getBytes(ANSI));
-            System.out.println(arg);
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
@@ -108,10 +111,8 @@ public class App {
                             }
                             replaces.add(replace);
                             config.put(key, replaces);
-                            System.out.println(replaces);
                         }
                         else {
-                            System.out.println(args[index]);
                             config.put(key, args[index]);
                         }
                     }
