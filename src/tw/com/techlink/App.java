@@ -92,6 +92,7 @@ public class App {
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
             String arg = new String(args[index].getBytes(ANSI));
+            System.out.println(arg);
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
@@ -107,7 +108,10 @@ public class App {
                             }
                             replaces.add(replace);
                             config.put(key, replaces);
-                        } else {
+                            System.out.println(replaces);
+                        }
+                        else {
+                            System.out.println(args[index]);
                             config.put(key, args[index]);
                         }
                     }
