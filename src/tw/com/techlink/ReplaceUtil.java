@@ -45,11 +45,12 @@ public class ReplaceUtil {
                 } else {
                     outputFile = new File(dist + "/" + f.getName());
                 }
-                FileWriter fw = new FileWriter(outputFile);
+                OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outputFile), encode);
                 while (br.ready()) {
-                    fw.append(getReplaceString(replace, br.readLine())).append("\n");
+                    osw.append(getReplaceString(replace, br.readLine())).append("\n");
                 }
-                fw.close();
+                osw.flush();
+                osw.close();
                 br.close();
                 System.out.println("輸出檔案：" + outputFile.getAbsoluteFile());
             }
@@ -93,6 +94,7 @@ public class ReplaceUtil {
             outputFile.createNewFile();
         }
         ZipOutputStream zos = new ZipOutputStream(outputFile);
+        zos.setEncoding(encode);
         Enumeration enumeration = zipFile.getEntries();
         while (enumeration.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) enumeration.nextElement();

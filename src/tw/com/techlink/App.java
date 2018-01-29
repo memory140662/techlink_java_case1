@@ -29,6 +29,7 @@ public class App {
         CONFIG_KEY_NAME.put("-r", "replace");
         CONFIG_KEY_NAME.put("-a", "action");
         CONFIG_KEY_NAME.put("-t", "site");
+        CONFIG_KEY_NAME.put("-d", "delete");
     }
     /**
      * -sd srcDir -od outputDir -tp tabcmdPath
