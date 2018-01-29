@@ -82,8 +82,7 @@ public class App {
     private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
         String[] argsC = new String[args.length];
         for (int index = 0; index < args.length; index++) {
-            char[] unicode = args[index].toCharArray();
-            argsC[index] = new String(args[index].getBytes("MS950"))
+            argsC[index] = new String(args[index].getBytes("Unicode"), "MS950")
                     .replace("\\", "\\\\");
         }
         args = argsC
@@ -267,4 +266,18 @@ public class App {
         return res;
     }
 
+
+//    public static String StrToUnicode1(String str) throws Exception
+//    {
+//        StringBuffer outHexStrBuf = new StringBuffer();
+//        for(int i=0; i < str.length(); i++)
+//        {
+//            String c = str.substring(i, i+1);
+//            byte bytes[]  = c.getBytes("Unicode");
+//            outHexStrBuf.append(String.format("\\u%s", HexByteKit.Byte2Hex(bytes).substring(4, 8))); // Trim BOM:0xFEFF
+//        }
+//
+//
+//        return outHexStrBuf.toString();
+//    }
 }
