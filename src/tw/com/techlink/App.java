@@ -83,8 +83,8 @@ public class App {
     private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
         String[] argsC = new String[args.length];
         for (int index = 0; index < args.length; index++) {
-            argsC[index] = new String(args[index].getBytes("Unicode"), "MS950")
-                    .replace("\\", "\\\\");
+            argsC[index] = new String(args[index]
+                    .replace("\\", "\\\\").getBytes("MS950"));
         }
         args = argsC
         ;Map<String, Object> config = new HashMap<>();
