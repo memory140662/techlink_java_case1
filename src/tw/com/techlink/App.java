@@ -82,7 +82,8 @@ public class App {
     private static Map<String, Object> getConfig(String[] args) throws UnsupportedEncodingException {
         String[] argsC = new String[args.length];
         for (int index = 0; index < args.length; index++) {
-            argsC[index] = args[index]
+            char[] unicode = args[index].toCharArray();
+            argsC[index] = new String(args[index].getBytes("Unicode"), "UTF-8")
                     .replace("\\", "\\\\");
         }
         args = argsC
@@ -91,7 +92,7 @@ public class App {
         String key = null;
         Map<String, String> replace = null;
         for (int index = 0; index < args.length; index++) {
-            String arg = new String(args[index].getBytes(ANSI));
+            String arg = args[index];
             if (arg.startsWith("-")) {
                 key = CONFIG_KEY_NAME.get(arg);
                 if (key == null) {
