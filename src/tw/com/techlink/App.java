@@ -54,7 +54,7 @@ public class App {
             e.printStackTrace();
         } finally {
             if (config != null && ("ALL".equalsIgnoreCase((String) config.get("action")) || "PUBLISH".equalsIgnoreCase((String) config.get("action")))) {
-//                delete(config);
+                delete(config);
             }
             System.out.println("Process finished with exit code " + result);
             System.exit(result);
