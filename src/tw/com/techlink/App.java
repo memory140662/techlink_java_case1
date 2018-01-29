@@ -46,6 +46,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
+            System.out.println(config);
             System.out.println("version: 2018/01/26 start.");
             result = start(config);
         } catch(Exception e) {
@@ -126,6 +127,7 @@ public class App {
         if (config != null) {
             String action = (config.get("action") != null) ? (String) config.get("action") : "ALL";
             System.out.println("***************************************");
+            System.setProperty("file.encoding", "UTF-8");
             // 更換
             if (action.equalsIgnoreCase("ALL") ||
                     action.equalsIgnoreCase("REP") ||
