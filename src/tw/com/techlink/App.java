@@ -83,7 +83,7 @@ public class App {
         String[] argsC = new String[args.length];
         for (int index = 0; index < args.length; index++) {
             char[] unicode = args[index].toCharArray();
-            argsC[index] = new String(args[index].getBytes("Unicode"), "UTF-8")
+            argsC[index] = new String(args[index].getBytes("MS950"))
                     .replace("\\", "\\\\");
         }
         args = argsC
