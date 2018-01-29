@@ -47,7 +47,6 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println(config);
             System.out.println("version: 2018/01/26 start.");
             result = start(config);
         } catch(Exception e) {
