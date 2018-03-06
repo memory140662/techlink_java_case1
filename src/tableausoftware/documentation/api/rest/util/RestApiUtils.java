@@ -46,7 +46,9 @@ public class RestApiUtils {
         QUERY_SITES(getApiUriBuilder().path("sites")),
         QUERY_WORKBOOKS(getApiUriBuilder().path("sites/{siteId}/users/{userId}/workbooks")),
         SIGN_IN(getApiUriBuilder().path("auth/signin")),
-        SIGN_OUT(getApiUriBuilder().path("auth/signout"));
+        SIGN_OUT(getApiUriBuilder().path("auth/signout")),
+        USER_UPDATE(getApiUriBuilder().path("sites/{siteId}/users/{userId}")),
+        ;
 
         private final UriBuilder m_builder;
 
@@ -395,6 +397,8 @@ public class RestApiUtils {
         // No credential were received
         return null;
     }
+
+
 
     /**
      * Invokes an HTTP request to sign out of the Server.

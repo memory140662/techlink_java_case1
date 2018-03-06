@@ -47,7 +47,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/01/26 start.");
+            System.out.println("version: 2018/03/06 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -257,13 +257,14 @@ public class App {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec(cmd);
         int res = process.waitFor();
-        BufferedReader ebr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        while (ebr.ready()) {
-            System.err.println(ebr.readLine());
-        }
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (br.ready()) {
             System.out.println(br.readLine());
+        }
+        BufferedReader ebr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        while (ebr.ready()) {
+            System.err.println(ebr.readLine());
+            res = 1;
         }
         return res;
     }
