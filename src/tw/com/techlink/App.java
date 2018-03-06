@@ -53,8 +53,10 @@ public class App {
             result = 1;
             e.printStackTrace();
         } finally {
-            if (config != null && ("ALL".equalsIgnoreCase((String) config.get("action")) || "PUBLISH".equalsIgnoreCase((String) config.get("action")))) {
-                delete(config);
+            if ("t".equals(config.get("delete"))) {
+                if (config != null && ("ALL".equalsIgnoreCase((String) config.get("action")) || "PUBLISH".equalsIgnoreCase((String) config.get("action")))) {
+                    delete(config);
+                }
             }
             System.out.println("Process finished with exit code " + result);
             System.exit(result);
@@ -118,6 +120,9 @@ public class App {
         }
         if (config.get("outputDir") == null) {
             config.put("outputDir", System.getProperty("java.io.tmpdir") + "/" + OUTPUT_DIR);
+        }
+        if (config.get("delete") == null ) {
+            config.put("delete", "t");
         }
         return config;
     }
