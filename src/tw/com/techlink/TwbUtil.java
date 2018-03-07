@@ -33,7 +33,7 @@ public class TwbUtil {
                 continue;
             }
             if (!zipEntry.isDirectory()) {
-                if (zipEntry.getName().endsWith(".tds")) {
+                if (zipEntry.getName().endsWith(".tds") || zipEntry.getName().endsWith(".twb")) {
                     Document document = remap(zipFile.getInputStream(zipEntry), siteId, serverNameWithProtocol);
                     XMLOutputter outputter = new XMLOutputter();
                     Format format = Format.getRawFormat();
