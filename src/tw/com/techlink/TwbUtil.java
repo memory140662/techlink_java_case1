@@ -1,6 +1,7 @@
 package tw.com.techlink;
 
 import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipExtraField;
 import org.apache.tools.zip.ZipFile;
 import org.apache.tools.zip.ZipOutputStream;
 import org.jdom2.*;
@@ -32,13 +33,23 @@ public class TwbUtil {
                 continue;
             }
             if (!zipEntry.isDirectory()) {
-                Document document = remap(zipFile.getInputStream(zipEntry), siteId, serverNameWithProtocol);
-                XMLOutputter outputter = new XMLOutputter();
-                Format format = Format.getRawFormat();
-                format.setEncoding("UTF8");
-                outputter.setFormat(format);
-                outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
-                outputStream.write(outputter.outputString(document).getBytes());
+                if (zipEntry.getName().endsWith(".tds")) {
+                    Document document = remap(zipFile.getInputStream(zipEntry), siteId, serverNameWithProtocol);
+                    XMLOutputter outputter = new XMLOutputter();
+                    Format format = Format.getRawFormat();
+                    format.setEncoding("UTF8");
+                    outputter.setFormat(format);
+                    outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
+                    outputStream.write(outputter.outputString(document).getBytes());
+                } else {
+                    outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
+                    InputStream is = zipFile.getInputStream(zipEntry);
+                    final byte[] bytes = new byte[1024];
+                    int length;
+                    while((length = is.read(bytes)) >= 0) {
+                        outputStream.write(bytes, 0, length);
+                    }
+                }
             }
         }
         outputStream.close();

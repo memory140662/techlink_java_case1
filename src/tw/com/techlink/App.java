@@ -5,7 +5,6 @@ import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -47,7 +46,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/03/06 start.");
+            System.out.println("version: 2018/03/07 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -177,7 +176,7 @@ public class App {
                 System.out.println("RestApiUtils init success.");
                 TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, server);
                 for (String target: targets) {
-                    result = execPublish(file, target, null, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
+                    result = execPublish(file, target, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
                 }
 //                restApiUtils.invokeSignOut(credential);
 //                restApiUtils = null;
@@ -189,14 +188,14 @@ public class App {
     }
 
 
-    private static int execPublish(File file, String type, String name, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException, InterruptedException {
+    private static int execPublish(File file, String type, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException, InterruptedException {
         int result = 0;
         String tabcmd = getTabcmd(tabcmdPath);
         System.out.println("tabcmd: " + tabcmd);
         for (File f: file.listFiles()) {
             if (f == null) continue;
             if (f.isDirectory()) {
-                result = execPublish(f, type, name, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
+                result = execPublish(f, type, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
             } else {
 
                 if (f.getName().endsWith(type)) {
