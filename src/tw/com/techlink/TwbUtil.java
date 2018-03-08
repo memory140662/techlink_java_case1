@@ -17,8 +17,6 @@ import java.util.Enumeration;
 
 public class TwbUtil {
 
-//    public static void main(String[] args) throws IOException, JDOMException {git
-
     public static void remapZip(File file, File output, String siteId, String serverNameWithProtocol) throws IOException, JDOMException {
         File tmp = new File(file.toPath().getParent() + "/tmp");
         File tmpFile = new File(tmp.toPath() + "/" + output.getName());
@@ -59,9 +57,9 @@ public class TwbUtil {
     }
     public static void remap(File file, File output, String siteId, String serverNameWithProtocol) throws JDOMException, IOException {
         System.out.println("Reamp: " + file.getName());
-        if (file.getName().endsWith("twbx")) {
+        if (file.getName().endsWith(".twbx") || file.getName().endsWith(".tdsx")) {
             remapZip(file, output,siteId,serverNameWithProtocol);
-        } else {
+        } else if (file.getName().endsWith(".twb") || file.getName().endsWith(".tds")) {
             Document document = remap(new FileInputStream(file), siteId, serverNameWithProtocol);
             XMLOutputter xmlOutput = new XMLOutputter();
             Format format = Format.getRawFormat();

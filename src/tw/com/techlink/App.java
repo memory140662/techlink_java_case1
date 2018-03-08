@@ -1,10 +1,19 @@
 package tw.com.techlink;
 
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipFile;
+import org.apache.tools.zip.ZipOutputStream;
+import org.jdom2.Document;
 import org.jdom2.JDOMException;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -46,7 +55,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/03/07 start.");
+            System.out.println("version: 2018/03/08 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -178,8 +187,6 @@ public class App {
                 for (String target: targets) {
                     result = execPublish(file, target, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
                 }
-//                restApiUtils.invokeSignOut(credential);
-//                restApiUtils = null;
                 System.out.println("***************************************");
             }
 
@@ -199,9 +206,8 @@ public class App {
             } else {
 
                 if (f.getName().endsWith(type)) {
-                    if (type.endsWith(".twb") || type.endsWith(".twbx")) {
-                        TwbUtil.remap(f, f, credential.getSite().getId(), server);
-                    }
+
+                    TwbUtil.remap(f, f, credential.getSite().getId(), server);
 
                     String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
                             tabcmd,
@@ -272,19 +278,4 @@ public class App {
         }
         return res;
     }
-
-
-//    public static String StrToUnicode1(String str) throws Exception
-//    {
-//        StringBuffer outHexStrBuf = new StringBuffer();
-//        for(int i=0; i < str.length(); i++)
-//        {
-//            String c = str.substring(i, i+1);
-//            byte bytes[]  = c.getBytes("Unicode");
-//            outHexStrBuf.append(String.format("\\u%s", HexByteKit.Byte2Hex(bytes).substring(4, 8))); // Trim BOM:0xFEFF
-//        }
-//
-//
-//        return outHexStrBuf.toString();
-//    }
 }

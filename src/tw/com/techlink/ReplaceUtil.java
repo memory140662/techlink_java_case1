@@ -102,15 +102,24 @@ public class ReplaceUtil {
                 continue;
             }
             if (!entry.isDirectory()) {
-                File file1 = new File(dist.getPath() + "/" + entry.getName());
-                zos.putNextEntry(new ZipEntry(file1.getName()));
-                BufferedReader br = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry), encode));
-                while (br.ready()) {
-                    String line = br.readLine();
-                    line = getReplaceString(replace, line).concat("\n");
-                    zos.write(line.getBytes(encode));
+                if (entry.getName().endsWith(".tds") || entry.getName().endsWith(".twb")) {
+                    zos.putNextEntry(new ZipEntry(entry.getName()));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry), encode));
+                    while (br.ready()) {
+                        String line = br.readLine();
+                        line = getReplaceString(replace, line).concat("\n");
+                        zos.write(line.getBytes(encode));
+                    }
+                    br.close();
+                } else {
+                    zos.putNextEntry(new ZipEntry(entry.getName()));
+                    InputStream is = zipFile.getInputStream(entry);
+                    final byte[] bytes = new byte[1024];
+                    int length;
+                    while((length = is.read(bytes)) >= 0) {
+                        zos.write(bytes, 0, length);
+                    }
                 }
-                br.close();
             }
         }
         zos.close();
