@@ -119,10 +119,12 @@ public class ReplaceUtil {
                     while((length = is.read(bytes)) >= 0) {
                         zos.write(bytes, 0, length);
                     }
+                    is.close();
                 }
             }
         }
         zos.close();
+        zipFile.close();
         System.out.println("輸出檔案(壓縮檔)：" + outputFile.getAbsoluteFile());
     }
 

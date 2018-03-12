@@ -47,10 +47,12 @@ public class TwbUtil {
                     while((length = is.read(bytes)) >= 0) {
                         outputStream.write(bytes, 0, length);
                     }
+                    is.close();
                 }
             }
         }
         outputStream.close();
+        zipFile.close();
         Files.copy(tmpFile.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
         Files.deleteIfExists(tmpFile.toPath());
         Files.deleteIfExists(tmp.toPath());
