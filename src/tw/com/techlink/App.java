@@ -1,20 +1,20 @@
 package tw.com.techlink;
 
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipFile;
-import org.apache.tools.zip.ZipOutputStream;
-import org.jdom2.Document;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jdom2.JDOMException;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
+
 import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
 public class App {
@@ -55,7 +55,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/03/08 start.");
+            System.out.println("version: 2018/03/12 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -126,6 +126,11 @@ public class App {
                 }
             }
         }
+        
+        if (config.get("site") == null) {
+        	config.put("delete", "");
+        }
+        
         if (config.get("outputDir") == null) {
             config.put("outputDir", System.getProperty("java.io.tmpdir") + "/" + OUTPUT_DIR);
         }
@@ -180,12 +185,16 @@ public class App {
                 final String tabcmdPath = (String) config.get("tabcmdPath");
                 final String projectName = (String) config.get("projectName");
                 final File file = new File(outputDir);
+                final String site = (String) config.get("site");
                 System.out.println("RestApiUtils init.");
                 restApiUtils = RestApiUtils.getInstance(server);
                 System.out.println("RestApiUtils init success.");
-                TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, server);
+                TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, site);
                 for (String target: targets) {
                     result = execPublish(file, target, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
+                }
+                if (credential != null && credential.getToken() != null) {
+                	restApiUtils.invokeSignOut(credential);
                 }
                 System.out.println("***************************************");
             }
@@ -199,6 +208,7 @@ public class App {
         int result = 0;
         String tabcmd = getTabcmd(tabcmdPath);
         System.out.println("tabcmd: " + tabcmd);
+        if (credential.getSite() == null) throw new RuntimeException("Site取得失敗。");
         for (File f: file.listFiles()) {
             if (f == null) continue;
             if (f.isDirectory()) {
@@ -206,8 +216,9 @@ public class App {
             } else {
 
                 if (f.getName().endsWith(type)) {
-
-                    TwbUtil.remap(f, f, credential.getSite().getId(), server);
+                	if (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb") || f.getName().endsWith(".tds") || f.getName().endsWith(".tdsx")) {
+                		TwbUtil.remap(f, f, credential.getSite().getId(), server);
+                	}
 
                     String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",
                             tabcmd,
