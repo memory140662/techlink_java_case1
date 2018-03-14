@@ -23,6 +23,7 @@ public class TwbUtil {
         tmp.mkdir();
         tmpFile.createNewFile();
         ZipOutputStream outputStream = new ZipOutputStream(tmpFile);
+        outputStream.setEncoding("UTF-8");
         ZipFile zipFile = new ZipFile(file);
         Enumeration enumeration = zipFile.getEntries();
         while (enumeration.hasMoreElements()) {
@@ -31,11 +32,11 @@ public class TwbUtil {
                 continue;
             }
             if (!zipEntry.isDirectory()) {
-                if (zipEntry.getName().endsWith(".tds") || zipEntry.getName().endsWith(".twb")) {
+                if (zipEntry.getName().endsWith(".twb")) {
                     Document document = remap(zipFile.getInputStream(zipEntry), siteId, serverNameWithProtocol);
                     XMLOutputter outputter = new XMLOutputter();
                     Format format = Format.getRawFormat();
-                    format.setEncoding("UTF8");
+                    format.setEncoding("UTF-8");
                     outputter.setFormat(format);
                     outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
                     outputStream.write(outputter.outputString(document).getBytes());

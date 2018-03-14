@@ -55,7 +55,7 @@ public class App {
         Map<String, Object> config = null;
         try {
             config = getConfig(args);
-            System.out.println("version: 2018/03/12 start.");
+            System.out.println("version: 2018/03/14 start.");
             result = start(config);
         } catch(Exception e) {
             result = 1;
@@ -216,7 +216,7 @@ public class App {
             } else {
 
                 if (f.getName().endsWith(type)) {
-                	if (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb") || f.getName().endsWith(".tds") || f.getName().endsWith(".tdsx")) {
+                	if (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb")) {
                 		TwbUtil.remap(f, f, credential.getSite().getId(), server);
                 	}
 

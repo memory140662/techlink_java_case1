@@ -95,6 +95,8 @@ public class ReplaceUtil {
         }
         ZipOutputStream zos = new ZipOutputStream(outputFile);
         zos.setEncoding(encode);
+        zos.setEncoding("UTF-8");
+        
         Enumeration enumeration = zipFile.getEntries();
         while (enumeration.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) enumeration.nextElement();
