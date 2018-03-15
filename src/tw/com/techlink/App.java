@@ -207,7 +207,7 @@ public class App {
             } else {
 
                 if (f.getName().endsWith(type)) {
-                	if (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb") || f.getName().endsWith(".tds") || f.getName().endsWith(".tdsx")) {
+                	if (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb")) {
                 		TwbUtil.remap(f, f, credential.getSite().getId(), server);
                         TwbUtil.replaceAttrOrder(f);
                 	}
