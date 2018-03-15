@@ -1,20 +1,11 @@
 package tw.com.techlink;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.jdom2.JDOMException;
-
 import tableausoftware.documentation.api.rest.bindings.TableauCredentialsType;
 import tableausoftware.documentation.api.rest.util.RestApiUtils;
+
+import java.io.*;
+import java.util.*;
 
 @SuppressWarnings("ConstantConditions")
 public class App {
@@ -140,7 +131,7 @@ public class App {
         return config;
     }
 
-    private static int start(Map<String, Object> config) throws JDOMException, IOException, InterruptedException {
+    private static int start(Map<String, Object> config) throws Exception {
         int result = 0;
         if (config != null) {
             String action = (config.get("action") != null) ? (String) config.get("action") : "ALL";
@@ -204,7 +195,7 @@ public class App {
     }
 
 
-    private static int execPublish(File file, String type, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws JDOMException, IOException, InterruptedException {
+    private static int execPublish(File file, String type, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws Exception {
         int result = 0;
         String tabcmd = getTabcmd(tabcmdPath);
         System.out.println("tabcmd: " + tabcmd);
@@ -218,6 +209,7 @@ public class App {
                 if (f.getName().endsWith(type)) {
                 	if (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb") || f.getName().endsWith(".tds") || f.getName().endsWith(".tdsx")) {
                 		TwbUtil.remap(f, f, credential.getSite().getId(), server);
+                        TwbUtil.replaceAttrOrder(f);
                 	}
 
                     String cmd = String.format("\"%s\" publish  \"%s\" %s %s %s %s -o ",

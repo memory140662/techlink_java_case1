@@ -1,3 +1,5 @@
+src/META-INF/
+src/tw/com/techlink/AppTest.java
 .classpath
 .idea/
 .project

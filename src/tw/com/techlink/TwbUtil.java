@@ -12,6 +12,7 @@ import org.jdom2.output.XMLOutputter;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.Enumeration;
 
 
@@ -35,19 +36,12 @@ public class TwbUtil {
                     Document document = remap(zipFile.getInputStream(zipEntry), siteId, serverNameWithProtocol);
                     XMLOutputter outputter = new XMLOutputter();
                     Format format = Format.getRawFormat();
-                    format.setEncoding("UTF8");
+                    format.setEncoding("UTF-8");
                     outputter.setFormat(format);
                     outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
                     outputStream.write(outputter.outputString(document).getBytes());
                 } else {
-                    outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
-                    InputStream is = zipFile.getInputStream(zipEntry);
-                    final byte[] bytes = new byte[1024];
-                    int length;
-                    while((length = is.read(bytes)) >= 0) {
-                        outputStream.write(bytes, 0, length);
-                    }
-                    is.close();
+                    copyFileInZip(outputStream, zipFile, zipEntry);
                 }
             }
         }
@@ -65,7 +59,7 @@ public class TwbUtil {
             Document document = remap(new FileInputStream(file), siteId, serverNameWithProtocol);
             XMLOutputter xmlOutput = new XMLOutputter();
             Format format = Format.getRawFormat();
-            format.setEncoding("UTF8");
+            format.setEncoding("UTF-8");
             xmlOutput.setFormat(format);
             xmlOutput.output(document, new OutputStreamWriter(new FileOutputStream(output), "UTF-8"));
         }
@@ -168,5 +162,99 @@ public class TwbUtil {
             repository.setAttribute("site", siteId);
         }
 
+    }
+
+    public static void replaceAttrOrder(File file) throws Exception {
+        File parent = file.getParentFile();
+        File temp = new File(parent.toPath().toString() + "/temp");
+        File tempFile = new File(temp.toPath().toString() + "/" + file.getName());
+        if (!temp.exists()) {
+            temp.mkdir();
+        }
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
+        if (file.getName().endsWith(".twbx") || file.getName().endsWith(".zip")) {
+            ZipOutputStream outputStream = new ZipOutputStream(tempFile);
+            outputStream.setEncoding("UTF-8");
+            ZipFile zipFile = new ZipFile(file);
+            Enumeration enumeration = zipFile.getEntries();
+            while(enumeration.hasMoreElements()) {
+                ZipEntry zipEntry = (ZipEntry) enumeration.nextElement();
+                if (zipEntry.getName().contains("MACOS")) {
+                    continue;
+                }
+                if (!zipEntry.isDirectory()) {
+                    if (zipEntry.getName().endsWith(".tds") || zipEntry.getName().endsWith(".twb")) {
+                        BufferedReader br = new BufferedReader(new InputStreamReader(zipFile.getInputStream(zipEntry), "UTF-8"));
+                        outputStream.putNextEntry(zipEntry);
+                        String line;
+                        while (br.ready()) {
+                            line = getLine(br.readLine()) + "\n";
+                            outputStream.write(line.getBytes());
+                        }
+                    } else {
+                        copyFileInZip(outputStream, zipFile, zipEntry);
+                    }
+                }
+            }
+            zipFile.close();
+            outputStream.flush();
+            outputStream.close();
+        } else if (file.getName().endsWith(".twb") || file.getName().endsWith(".tds")) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+            OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(tempFile));
+            while(br.ready()) {
+                osw.append(getLine(br.readLine())).append("\n");
+            }
+            osw.flush();
+            osw.close();
+            br.close();
+        }
+        Files.copy(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.deleteIfExists(tempFile.toPath());
+        Files.deleteIfExists(temp.toPath());
+    }
+
+    private static String getLine(String line) {
+        String comment;
+        String[] attrs;
+        String tempStr = "";
+        StringBuffer newLine;
+        if (line.contains("<workbook")) {
+            comment = line.substring(0, line.indexOf("<workbook"));
+            line = line.substring(line.indexOf("<workbook"));
+            attrs = line.split(" ");
+            newLine = new StringBuffer();
+            for (int index = 0; index < attrs.length; index++) {
+                if (attrs[index].trim().isEmpty()) continue;
+                if (attrs[index].startsWith("xmlns:user")) {
+                    tempStr = attrs[index].trim();
+                    continue;
+                }
+                if (index == attrs.length -1) {
+                    newLine.append(attrs[index].substring(0, attrs[index].lastIndexOf(">")))
+                            .append(" ")
+                            .append(tempStr)
+                            .append(" ")
+                            .append(attrs[index].substring(attrs[index].lastIndexOf(">")));
+                } else {
+                    newLine.append(attrs[index]).append(" ");
+                }
+            }
+            line = comment.concat(newLine.toString());
+        }
+        return line;
+    }
+
+    private static void copyFileInZip(ZipOutputStream outputStream, ZipFile zipFile, ZipEntry zipEntry) throws IOException {
+        outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
+        InputStream is = zipFile.getInputStream(zipEntry);
+        final byte[] bytes = new byte[1024];
+        int length;
+        while((length = is.read(bytes)) >= 0) {
+            outputStream.write(bytes, 0, length);
+        }
+        is.close();
     }
 }
