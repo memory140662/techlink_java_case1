@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
+import java.util.LinkedList;
 
 
 public class TwbUtil {
@@ -172,15 +173,16 @@ public class TwbUtil {
 
     public static void replaceAttrOrder(File file) throws Exception {
         File parent = file.getParentFile();
-        File temp = new File(parent.toPath().toString() + "/temp");
-        File tempFile = new File(temp.toPath().toString() + "/" + file.getName());
-        if (!temp.exists()) {
-            temp.mkdir();
-        }
-        if (tempFile.exists()) {
-            tempFile.delete();
-        }
+
         if (file.getName().endsWith(".twbx") || file.getName().endsWith(".zip")) {
+            File temp = new File(parent.toPath().toString() + "/temp");
+            File tempFile = new File(temp.toPath().toString() + "/" + file.getName());
+            if (!temp.exists()) {
+                temp.mkdir();
+            }
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
             ZipOutputStream outputStream = new ZipOutputStream(tempFile);
             outputStream.setEncoding("UTF-8");
             ZipFile zipFile = new ZipFile(file);
@@ -207,21 +209,26 @@ public class TwbUtil {
             outputStream.flush();
             outputStream.close();
             zipFile.close();
+            Files.copy(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.deleteIfExists(tempFile.toPath());
+            Files.deleteIfExists(temp.toPath());
         } else if (file.getName().endsWith(".twb") || file.getName().endsWith(".tds")) {
             FileInputStream fis = new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader( fis, "UTF-8"));
-            OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(tempFile));
+            LinkedList<String> data = new LinkedList<>();
             while(br.ready()) {
-                osw.append(getLine(br.readLine())).append("\n");
+                data.add(getLine(br.readLine()).concat("\n"));
+            }
+            br.close();
+            fis.close();
+            OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file));
+            while (!data.isEmpty()) {
+                osw.append(data.pollFirst());
             }
             osw.flush();
             osw.close();
-            br.close();
-            fis.close();
         }
-        Files.copy(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        Files.deleteIfExists(tempFile.toPath());
-        Files.deleteIfExists(temp.toPath());
+
     }
 
     private static String getLine(String line) {
@@ -230,7 +237,7 @@ public class TwbUtil {
         String tempStr = "";
         StringBuffer newLine;
         if (line.contains("<workbook")) {
-            comment = line.substring(0, line.indexOf("<workbook"));
+            comment = line.substring(0, line.indexOf("<workbook")).concat("\n");
             line = line.substring(line.indexOf("<workbook"));
             attrs = line.split(" ");
             newLine = new StringBuffer();
