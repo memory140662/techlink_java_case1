@@ -1,10 +1,12 @@
 package tw.com.techlink;
 
 import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipExtraField;
 import org.apache.tools.zip.ZipFile;
 import org.apache.tools.zip.ZipOutputStream;
-import org.jdom2.*;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
@@ -12,7 +14,6 @@ import org.jdom2.output.XMLOutputter;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Comparator;
 import java.util.Enumeration;
 
 
@@ -34,13 +35,15 @@ public class TwbUtil {
             }
             if (!zipEntry.isDirectory()) {
                 if (zipEntry.getName().endsWith(".twb")) {
-                    Document document = remap(zipFile.getInputStream(zipEntry), siteId, serverNameWithProtocol);
+                    InputStream is = zipFile.getInputStream(zipEntry);
+                    Document document = remap(is, siteId, serverNameWithProtocol);
                     XMLOutputter outputter = new XMLOutputter();
                     Format format = Format.getRawFormat();
                     format.setEncoding("UTF-8");
                     outputter.setFormat(format);
                     outputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
                     outputStream.write(outputter.outputString(document).getBytes());
+                    is.close();
                 } else {
                     copyFileInZip(outputStream, zipFile, zipEntry);
                 }
@@ -57,12 +60,14 @@ public class TwbUtil {
         if (file.getName().endsWith(".twbx") || file.getName().endsWith(".tdsx")) {
             remapZip(file, output,siteId,serverNameWithProtocol);
         } else if (file.getName().endsWith(".twb") || file.getName().endsWith(".tds")) {
-            Document document = remap(new FileInputStream(file), siteId, serverNameWithProtocol);
+            InputStream is = new FileInputStream(file);
+            Document document = remap(is, siteId, serverNameWithProtocol);
             XMLOutputter xmlOutput = new XMLOutputter();
             Format format = Format.getRawFormat();
             format.setEncoding("UTF-8");
             xmlOutput.setFormat(format);
             xmlOutput.output(document, new OutputStreamWriter(new FileOutputStream(output), "UTF-8"));
+            is.close();
         }
     }
 
@@ -199,11 +204,12 @@ public class TwbUtil {
                     }
                 }
             }
-            zipFile.close();
             outputStream.flush();
             outputStream.close();
+            zipFile.close();
         } else if (file.getName().endsWith(".twb") || file.getName().endsWith(".tds")) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+            FileInputStream fis = new FileInputStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader( fis, "UTF-8"));
             OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(tempFile));
             while(br.ready()) {
                 osw.append(getLine(br.readLine())).append("\n");
@@ -211,6 +217,7 @@ public class TwbUtil {
             osw.flush();
             osw.close();
             br.close();
+            fis.close();
         }
         Files.copy(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         Files.deleteIfExists(tempFile.toPath());
