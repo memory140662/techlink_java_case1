@@ -32,32 +32,26 @@ public class ReplaceUtil {
         this.encode = encode;
     }
 
-    private void replaceAttr(List<Map<String, String>> replace, File dist, File src) {
+    private void replaceAttr(List<Map<String, String>> replace, File dist, File src) throws Exception {
         System.out.println("進件檔案：" + src.getAbsoluteFile().toString());
-        try {
-            File f = new File(src.getAbsoluteFile().toString());
-            if (f.isFile()) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(src.getAbsoluteFile().toString()), encode));
-                File outputFile = null;
-                if (dist.getName().endsWith(".twb") || dist.getName().endsWith(".twbx")
-                        || dist.getName().endsWith(".tds") || dist.getName().endsWith(".tdsx")) {
-                    outputFile = dist;
-                } else {
-                    outputFile = new File(dist + "/" + f.getName());
-                }
-                OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outputFile), encode);
-                while (br.ready()) {
-                    osw.append(getReplaceString(replace, br.readLine())).append("\n");
-                }
-                osw.flush();
-                osw.close();
-                br.close();
-                System.out.println("輸出檔案：" + outputFile.getAbsoluteFile());
+        File f = new File(src.getAbsoluteFile().toString());
+        if (f.isFile()) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(src.getAbsoluteFile().toString()), encode));
+            File outputFile = null;
+            if (dist.getName().endsWith(".twb") || dist.getName().endsWith(".twbx")
+                    || dist.getName().endsWith(".tds") || dist.getName().endsWith(".tdsx")) {
+                outputFile = dist;
+            } else {
+                outputFile = new File(dist + "/" + f.getName());
             }
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
+            OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outputFile), encode);
+            while (br.ready()) {
+                osw.append(getReplaceString(replace, br.readLine())).append("\n");
+            }
+            osw.flush();
+            osw.close();
+            br.close();
+            System.out.println("輸出檔案：" + outputFile.getAbsoluteFile());
         }
     }
 
@@ -197,7 +191,7 @@ public class ReplaceUtil {
         }
     }
 
-    public int start() {
+    public int start() throws Exception {
         File dist = new File(outputDir);
         File file = new File(srcDir);
         System.out.println("來源目錄: " + file.getAbsolutePath());
@@ -224,7 +218,7 @@ public class ReplaceUtil {
         return 0;
     }
 
-    private boolean execReplace(File dist, File f) {
+    private boolean execReplace(File dist, File f) throws Exception {
         System.out.println(f.getName());
         if (f.getName().endsWith(".tdsx") || f.getName().endsWith(".twbx") || f.getName().endsWith(".zip")) {
             try {

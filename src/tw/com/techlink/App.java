@@ -29,6 +29,7 @@ public class App {
         CONFIG_KEY_NAME.put("-a", "action");
         CONFIG_KEY_NAME.put("-t", "site");
         CONFIG_KEY_NAME.put("-d", "delete");
+        CONFIG_KEY_NAME.put("-rwb", "remapWorkbook");
     }
     /**
      * -sd srcDir -od outputDir -tp tabcmdPath
@@ -128,6 +129,11 @@ public class App {
         if (config.get("delete") == null ) {
             config.put("delete", "t");
         }
+
+        if (config.get("remapWorkbook") == null) {
+            config.put("remapWorkbook", "false");
+        }
+
         return config;
     }
 
@@ -175,6 +181,7 @@ public class App {
                 final List<String> targets = Arrays.asList("tds", "tdsx", "twb", "twbx");
                 final String tabcmdPath = (String) config.get("tabcmdPath");
                 final String projectName = (String) config.get("projectName");
+                final boolean isRemap = !"false".equals(((String) config.get("remapWorkbook")));
                 final File file = new File(outputDir);
                 final String site = (String) config.get("site");
                 System.out.println("RestApiUtils init.");
@@ -182,7 +189,7 @@ public class App {
                 System.out.println("RestApiUtils init success.");
                 TableauCredentialsType credential = restApiUtils.invokeSignIn(username, password, site);
                 for (String target: targets) {
-                    result = execPublish(file, target, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
+                    result = execPublish(file, target, dbUsername, dbPassword, tabcmdPath, projectName, credential, server, isRemap);
                 }
                 if (credential != null && credential.getToken() != null) {
                 	restApiUtils.invokeSignOut(credential);
@@ -195,7 +202,7 @@ public class App {
     }
 
 
-    private static int execPublish(File file, String type, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server) throws Exception {
+    private static int execPublish(File file, String type, String dbUsername, String dbPassword, String tabcmdPath, String projectName, TableauCredentialsType credential, String server, boolean isRemap) throws Exception {
         int result = 0;
         String tabcmd = getTabcmd(tabcmdPath);
         System.out.println("tabcmd: " + tabcmd);
@@ -203,11 +210,11 @@ public class App {
         for (File f: file.listFiles()) {
             if (f == null) continue;
             if (f.isDirectory()) {
-                result = execPublish(f, type, dbUsername, dbPassword, tabcmdPath, projectName, credential, server);
+                result = execPublish(f, type, dbUsername, dbPassword, tabcmdPath, projectName, credential, server, isRemap);
             } else {
 
                 if (f.getName().endsWith(type)) {
-                	if (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb")) {
+                	if (isRemap && (f.getName().endsWith(".twbx") || f.getName().endsWith(".twb"))) {
                 		TwbUtil.remap(f, f, credential.getSite().getId(), server);
                         TwbUtil.replaceAttrOrder(f);
                 	}
